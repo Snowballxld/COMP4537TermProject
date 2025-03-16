@@ -1,3 +1,4 @@
+const path = require('path');
 const express = require('express');
 const router = express.Router();
 const User = require('./user');
@@ -5,10 +6,10 @@ const bcrypt = require('bcrypt');
 
 // Route to display the signup form
 router.get('/', (req, res) => {
-    if (req.session.isAuthenticated) {
+    if (req.session.isLoggedIn) {
         return res.redirect('/home');
-      }
-    res.render('signup', { error: null });
+    }
+    res.sendFile(path.join(__dirname, '../../Frontend/views', 'signup.html'));
 });
 
 // Route to handle signup form submissions
@@ -35,8 +36,10 @@ router.post('/', async (req, res) => {
             password: req.body.password,
         });
         await user.save();
+         // Set the session flag and basic user info
         req.session.isLoggedIn = true;
         req.session.email = req.body.email;
+        req.session.userId = user._id;
 
         // Redirect to the user's profile page after successful signup
         res.redirect('/home');
