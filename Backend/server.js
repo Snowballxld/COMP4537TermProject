@@ -34,7 +34,6 @@ async function initMongoDB() {
     }
 }
 
-
 // Set up Session Middleware to Track Session Expiration
 app.use(session({
     secret: process.env.SESSION_SECRET || 'defaultSecretKey',
@@ -61,7 +60,6 @@ app.use(cors({
 
 // Enable CORS for frontend requests
 app.use(bodyParser.json()); // Parse JSON request bodies
-
 
 //------------------------------------------------
 
@@ -102,7 +100,6 @@ app.post("/api/signup", (req, res) => {
     // Send response
     res.json({ message: "Signup data received successfully!" });
 });
-
 
 //------------------------------------------------
 
