@@ -1,11 +1,22 @@
 console.log("YOOO");
-
+if (sessionStorage.getItem("isLoggedIn") === "true") {
+    window.location.href = "/views/home.html";
+}
 async function SignUp(event) {
     event.preventDefault();
     console.log("YOOOO");
-    const username = document.getElementById("username").value;
+
+    const email = document.getElementById("email").value;
     const password = document.getElementById("password").value;
-    console.log(username)
+    console.log(email);
+
+    // Validate the email format
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+        alert("Please enter a valid email address.");
+        return;
+    }
+
     // Hash the password using SHA-256
     async function hashPassword(password) {
         const encoder = new TextEncoder();
@@ -15,11 +26,12 @@ async function SignUp(event) {
             .map(b => b.toString(16).padStart(2, "0"))
             .join("");
     }
-
+    
     const hashedPassword = await hashPassword(password);
-    console.log(hashedPassword)
+    console.log(hashedPassword);
+
     const requestData = {
-        username: username,
+        email: email,
         password: hashedPassword
     };
 
@@ -33,8 +45,8 @@ async function SignUp(event) {
             body: JSON.stringify(requestData)
         });
 
-
         if (response.ok) {
+            sessionStorage.setItem("isLoggedIn", "true");
             alert("Signup successful!");
             window.location.href = "/views/home.html";
         } else {
