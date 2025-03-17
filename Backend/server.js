@@ -129,6 +129,7 @@ app.post("/api/signup", async (req, res) => {
         });
 
         await newUser.save();
+
         console.log("User signed up successfully:", newUser);
         res.status(201).json({ message: "Signup successful!" });
     } catch (error) {

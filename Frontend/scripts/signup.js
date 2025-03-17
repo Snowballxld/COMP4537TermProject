@@ -36,6 +36,7 @@ async function SignUp(event) {
 
         if (response.ok) {
             alert("Signup successful!");
+            window.location.href = "/views/home.html";
         } else {
             alert("Signup failed. Please try again.");
         }
