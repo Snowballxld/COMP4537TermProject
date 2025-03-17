@@ -29,7 +29,7 @@ async function login(event) {
       if (response.ok) {
          console.log("sigma");
          sessionStorage.setItem("isLoggedIn", "true");
-         window.location.href = "/Frontend/views/home.html";
+         window.location.href = "/views/home.html";
 
 
           // If login is successful, send a GET request to retrieve user info

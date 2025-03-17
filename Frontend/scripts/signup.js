@@ -48,6 +48,7 @@ async function SignUp(event) {
         if (response.ok) {
             sessionStorage.setItem("isLoggedIn", "true");
             alert("Signup successful!");
+
         } else {
             alert("Signup failed. Please try again.");
         }
