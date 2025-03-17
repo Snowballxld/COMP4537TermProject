@@ -1,11 +1,20 @@
 console.log("YOOO");
 
-  async function SignUp(event) {
+async function SignUp(event) {
     event.preventDefault();
     console.log("YOOOO");
-    const username = document.getElementById("username").value;
+
+    const email = document.getElementById("email").value;
     const password = document.getElementById("password").value;
-    console.log(username)
+    console.log(email);
+
+    // Validate the email format
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+        alert("Please enter a valid email address.");
+        return;
+    }
+
     // Hash the password using SHA-256
     async function hashPassword(password) {
         const encoder = new TextEncoder();
@@ -17,22 +26,22 @@ console.log("YOOO");
     }
     
     const hashedPassword = await hashPassword(password);
-    console.log(hashedPassword)
+    console.log(hashedPassword);
+
     const requestData = {
-        username: username,
+        email: email,
         password: hashedPassword
     };
 
     // Send data to backend
     try {
         const response = await fetch("http://localhost:3000/api/signup", { // Change https to http
-        method: "POST",
-        headers: {
-            "Content-Type": "application/json"
-        },
-        body: JSON.stringify(requestData)
-      });
-  
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify(requestData)
+        });
 
         if (response.ok) {
             alert("Signup successful!");
