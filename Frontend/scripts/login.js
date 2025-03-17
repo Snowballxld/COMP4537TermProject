@@ -5,11 +5,10 @@ if (sessionStorage.getItem("isLoggedIn") === "true") {
 async function login(event) {
     event.preventDefault(); // Prevent form from submitting
 
-    const email = document.getElementById("email").value;
-    const password = document.getElementById("password").value;
-
-    // Hash the password using the existing hashPassword function
-    const hashedPassword = await hashPassword(password);
+  const email = document.getElementById("email").value;
+  const password = document.getElementById("password").value;
+  // Hash the password using the existing hashPassword function
+  const hashedPassword = await hashPassword(password);
 
     const requestData = {
         email: email,
@@ -26,10 +25,16 @@ async function login(event) {
             body: JSON.stringify(requestData),
         });
 
-        if (response.ok) {
-            console.log("sigma");
-            sessionStorage.setItem("isLoggedIn", "true");
-            window.location.href = "/views/home.html";
+      if (response.ok) {
+         console.log("sigma");
+         sessionStorage.setItem("isLoggedIn", "true");
+         const temp = await response.json();
+         console.log(temp.admin)
+         if(temp.admin == "True"){
+            window.location.href = "/Frontend/views/admin.html";
+         } else{
+            window.location.href = "/Frontend/views/home.html";
+         }
 
 
             // If login is successful, send a GET request to retrieve user info
