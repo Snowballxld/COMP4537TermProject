@@ -1,3 +1,7 @@
+if (sessionStorage.getItem("isLoggedIn") === "true") {
+    window.location.href = "/Frontend/views/home.html";
+}
+
 async function login(event) {
   event.preventDefault(); // Prevent form from submitting
 
@@ -24,7 +28,10 @@ async function login(event) {
 
       if (response.ok) {
          console.log("sigma");
+         sessionStorage.setItem("isLoggedIn", "true");
          window.location.href = "/Frontend/views/home.html";
+
+
           // If login is successful, send a GET request to retrieve user info
           const userInfo = await fetch("http://localhost:3000/api/user", {
               method: "GET",
@@ -32,7 +39,6 @@ async function login(event) {
                   "Content-Type": "application/json",
               },
           });
-
           const data = await userInfo.json();
           if (data.success) {
              console.log("data success");

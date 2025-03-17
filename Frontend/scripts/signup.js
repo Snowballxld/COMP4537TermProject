@@ -1,5 +1,7 @@
 console.log("YOOO");
-
+if (sessionStorage.getItem("isLoggedIn") === "true") {
+    window.location.href = "/Frontend/views/home.html";
+}
 async function SignUp(event) {
     event.preventDefault();
     console.log("YOOOO");
@@ -44,6 +46,7 @@ async function SignUp(event) {
         });
 
         if (response.ok) {
+            sessionStorage.setItem("isLoggedIn", "true");
             alert("Signup successful!");
         } else {
             alert("Signup failed. Please try again.");
