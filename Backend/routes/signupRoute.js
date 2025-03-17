@@ -4,18 +4,8 @@ const router = express.Router();
 const User = require('./user');
 const bcrypt = require('bcrypt');
 
-// Route to display the signup form
-router.get('/', (req, res) => {
-    if (req.session.isLoggedIn) {
-        return res.redirect('/home');
-    }
-    res.sendFile(path.join(__dirname, '../../Frontend/views', 'signup.html'));
-});
-
 // Route to handle signup form submissions
 router.post('/', async (req, res) => {
-    console.log('Request body:', req.body); // Add this line to debug
-
     // Check if passwords match
     if (req.body.password !== req.body.confirmPassword) {
         console.log('Passwords do not match');
@@ -41,11 +31,10 @@ router.post('/', async (req, res) => {
         req.session.email = req.body.email;
         req.session.userId = user._id;
 
-        // Redirect to the user's profile page after successful signup
-        res.redirect('/home');
+        res.json({ message: "Signup successful", isLoggedIn: true });
     } catch (err) {
-        console.error('Signup error:', err);
-        res.redirect('/signup.html?error=An error occurred during signup');
+        console.error("Signup error:", err);
+        res.status(500).json({ error: "An error occurred during signup" });
     }
 });
 

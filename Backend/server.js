@@ -4,6 +4,11 @@ const mongoose = require('mongoose');
 const app = express();
 require('dotenv').config();
 const path = require('path');
+const cors = require("cors");
+const bodyParser = require("body-parser");
+
+const port = process.env.PORT || 3000;
+const mongoUri = process.env.MONGO_URI;
 
 // Serve static files
 app.use(express.static(path.join(__dirname, '../Frontend/views'))); // Serve HTML files
@@ -12,8 +17,6 @@ app.use('/scripts', express.static(path.join(__dirname, '../Frontend/scripts')))
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 
-const port = process.env.PORT || 3000;
-const mongoUri = process.env.MONGO_URI;
 
 //------------------------------------------------
 
@@ -49,6 +52,17 @@ app.use((req, res, next) => {
     next();
 });
 
+// Middleware
+app.use(cors({
+    origin: "*", // Allow all origins (for development)
+    methods: "GET,POST",
+    allowedHeaders: "Content-Type"
+}));
+
+// Enable CORS for frontend requests
+app.use(bodyParser.json()); // Parse JSON request bodies
+
+
 //------------------------------------------------
 
 // Import routes
@@ -77,6 +91,19 @@ app.get("/home", (req, res) => {
     return res.sendFile(path.join(__dirname, '../Frontend/views', 'home.html')); // Serve home.html if logged in
 });
 
+// Handle signup requests, shouldn't this be in the signupRoute.js file?
+app.post("/api/signup", (req, res) => {
+    const { username, password } = req.body;
+
+    console.log("Received Signup Request:");
+    console.log("Username:", username);
+    console.log("Hashed Password:", password);
+
+    // Send response
+    res.json({ message: "Signup data received successfully!" });
+});
+
+
 //------------------------------------------------
 
 // Start Express Server AFTER DB Connection
@@ -85,5 +112,4 @@ initMongoDB().then(() => {
     app.listen(port, () => {
         console.log(`🚀 Server running on http://localhost:${port}`);
     });
-
 });
