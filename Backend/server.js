@@ -5,20 +5,8 @@ const app = express();
 const cors = require('cors');
 require('dotenv').config();
 const path = require('path');
-
-app.use(express.urlencoded({ extended: true }));
-app.use(express.json());
-const express = require('express');
-const session = require('express-session');
-const mongoose = require('mongoose');
-const app = express();
-require('dotenv').config();
-const path = require('path');
-const cors = require("cors");
 const bodyParser = require("body-parser");
 
-const port = process.env.PORT || 3000;
-const mongoUri = process.env.MONGO_URI;
 const port = process.env.PORT || 3000;
 const mongoUri = process.env.MONGO_URI;
 
@@ -29,8 +17,8 @@ app.use('/scripts', express.static(path.join(__dirname, '../Frontend/scripts')))
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 
-
 //------------------------------------------------
+//Setup
 
 // Initialize MongoDB connection
 async function initMongoDB() {
@@ -45,36 +33,7 @@ async function initMongoDB() {
         process.exit(1);
     }
 }
-app.use(cors({
-    origin: "*", // Allow all origins (for development)
-    methods: "GET,POST",
-    allowedHeaders: "Content-Type"
-}));
 
-
-async function initMongoDB() {
-    try {
-        await mongoose.connect(mongoUri, {
-            useNewUrlParser: true,
-            useUnifiedTopology: true
-        });
-        console.log('✅ Connected to MongoDB!');
-    } catch (err) {
-        console.error("❌ Connection error:", err);
-        process.exit(1); // Exit if MongoDB connection fails
-    }
-}
-
-// Set up Session Middleware to Track Session Expiration
-app.use(session({
-    secret: process.env.SESSION_SECRET || 'defaultSecretKey',
-    resave: false,
-    saveUninitialized: false,
-    cookie: {
-        maxAge: 1 * 60 * 60 * 1000, // Session expires in 1 hour (1 hour * 60 minutes * 60 seconds * 1000 ms)
-        httpOnly: true
-    }
-}));
 // Set up Session Middleware to Track Session Expiration
 app.use(session({
     secret: process.env.SESSION_SECRET || 'defaultSecretKey',
@@ -103,6 +62,7 @@ app.use(cors({
 app.use(bodyParser.json()); // Parse JSON request bodies
 
 //------------------------------------------------
+//Routing
 
 // Import routes
 const signupRoute = require('./routes/signupRoute');
@@ -130,19 +90,9 @@ app.get("/home", (req, res) => {
     return res.sendFile(path.join(__dirname, '../Frontend/views', 'home.html')); // Serve home.html if logged in
 });
 
-// Handle signup requests, shouldn't this be in the signupRoute.js file?
-app.post("/api/signup", (req, res) => {
-    const { username, password } = req.body;
-
-    console.log("Received Signup Request:");
-    console.log("Username:", username);
-    console.log("Hashed Password:", password);
-
-    // Send response
-    res.json({ message: "Signup data received successfully!" });
-});
-
 //------------------------------------------------
+//request that aren't handled in the route files
+
 // Middleware to make user available in all templates (must be after session middleware)
 app.use((req, res, next) => {
     res.locals.user = req.session.user || null;
@@ -155,9 +105,9 @@ const userSchema = new mongoose.Schema({
     password: { type: String, required: true }
 });
 
-const User = mongoose.model('User', userSchema);
+const User = mongoose.models.User || mongoose.model('User', userSchema);
 
-// Handle signup requests
+// Handle signup requests, shouldn't this be in the signupRoute.js file?
 app.post("/api/signup", async (req, res) => {
     const { email, password } = req.body;
 
@@ -225,13 +175,8 @@ app.get("/api/user", (req, res) => {
     }
 });
 
-// Start Express Server AFTER DB Connection
-initMongoDB().then(() => {
-    // Start the server
-    app.listen(port, () => {
-        console.log(`🚀 Server running on http://localhost:${port}`);
-    });
-});
+//------------------------------------------------
+
 // Start Express Server AFTER DB Connection
 initMongoDB().then(() => {
     // Start the server
