@@ -48,7 +48,7 @@ async function SignUp(event) {
         if (response.ok) {
             sessionStorage.setItem("isLoggedIn", "true");
             alert("Signup successful!");
-
+            window.location.href = "/views/home.html";
         } else {
             alert("Signup failed. Please try again.");
         }
