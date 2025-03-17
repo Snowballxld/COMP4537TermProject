@@ -1,8 +1,9 @@
-document.addEventListener('DOMContentLoaded', () => {
-    const errorMessageDiv = document.getElementById('error-message');
+if (sessionStorage.getItem("isLoggedIn") === "true") {
+    window.location.href = "/views/home.html";
+}
 
-    const urlParams = new URLSearchParams(window.location.search);
-    const error = urlParams.get('error');
+async function login(event) {
+    event.preventDefault(); // Prevent form from submitting
 
     const email = document.getElementById("email").value;
     const password = document.getElementById("password").value;
@@ -57,10 +58,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
 // Hashing function you already have
 async function hashPassword(password) {
-        const encoder = new TextEncoder();
-        const data = encoder.encode(password);
-        const hashBuffer = await crypto.subtle.digest("SHA-256", data);
-        return Array.from(new Uint8Array(hashBuffer))
-            .map(b => b.toString(16).padStart(2, "0"))
-            .join("");
-    }
+    const encoder = new TextEncoder();
+    const data = encoder.encode(password);
+    const hashBuffer = await crypto.subtle.digest("SHA-256", data);
+    return Array.from(new Uint8Array(hashBuffer))
+        .map(b => b.toString(16).padStart(2, "0"))
+        .join("");
+}
