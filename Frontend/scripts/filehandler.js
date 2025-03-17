@@ -11,11 +11,15 @@ async function uploadAudio() {
     formData.append('audio', file);
 
     try {
+
+        console.log("Pee");
+
         const response = await fetch('/transcribe/api/transcribe', {
             method: 'POST',
             body: formData
         });
 
+        console.log("Poop");
 
         const data = await response.json();
         if (data.text) {
