@@ -1,69 +1,33 @@
-const express = require('express');
-const session = require('express-session');
-const mongoose = require('mongoose');   
-const cors = require('cors');
-const path = require('path');
-require('dotenv').config();
+const express = require("express");
+const cors = require("cors");
+const bodyParser = require("body-parser");
 
 const app = express();
-const port = process.env.PORT || 5500;
-const mongoUri = process.env.MONGO_URI;
+const PORT = 3000;
 
+// Middleware
 app.use(cors({
-    origin: "https://bejewelled-kulfi-2a0acf.netlify.app/views/", 
-    credentials: true
+    origin: "*", // Allow all origins (for development)
+    methods: "GET,POST",
+    allowedHeaders: "Content-Type"
 }));
 
-app.use(express.urlencoded({ extended: true }));
-app.use(express.json());
+ // Enable CORS for frontend requests
+app.use(bodyParser.json()); // Parse JSON request bodies
 
-app.get('/login.html', (req, res) => {
-    res.redirect('/login');
-});
-app.get('/signup.html', (req, res) => {
-    res.redirect('/signup');
-});
+// Handle signup requests
+app.post("/api/signup", (req, res) => {
+    const { username, password } = req.body;
 
-async function initMongoDB() {
-    try {
-        await mongoose.connect(mongoUri, {
-            useNewUrlParser: true,
-            useUnifiedTopology: true
-        });
-        console.log('✅ Connected to MongoDB!');
-    } catch (err) {
-        console.error("❌ Connection error:", err);
-        process.exit(1); // Exit if MongoDB connection fails
-    }
-}
+    console.log("Received Signup Request:");
+    console.log("Username:", username);
+    console.log("Hashed Password:", password);
 
-// Set up Session Middleware to Track Session Expiration
-app.use(session({
-    secret: process.env.SESSION_SECRET || 'defaultSecretKey',
-    resave: false,
-    saveUninitialized: false,
-    cookie: {
-        maxAge: 1 * 60 * 60 * 1000, // Session expires in 1 hour (1 hour * 60 minutes * 60 seconds * 1000 ms)
-        httpOnly: true
-    }
-}));
-
-const signupRoute = require('./routes/signupRoute');
-const loginRoute = require('./routes/loginRoute');
-
-app.use('/signup', signupRoute);
-app.use('/login', loginRoute);
-
-
-app.get("/", (req, res) => {
-    res.json({ message: "Backend API is running!" });
+    // Send response
+    res.json({ message: "Signup data received successfully!" });
 });
 
-// Start Express Server AFTER DB Connection
-initMongoDB().then(() => {
-    // Start the server
-    app.listen(port, () => {
-        console.log(`🚀 Server running on http://localhost:${port}`);
-    });
-
+// Start server
+app.listen(PORT, () => {
+    console.log(`Server is running on http://localhost:${PORT}`);
 });
