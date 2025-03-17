@@ -1,6 +1,6 @@
 console.log("YOOO");
 if (sessionStorage.getItem("isLoggedIn") === "true") {
-    window.location.href = "/Frontend/views/home.html";
+    window.location.href = "/views/home.html";
 }
 async function SignUp(event) {
     event.preventDefault();
