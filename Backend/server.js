@@ -5,22 +5,20 @@ const app = express();
 const cors = require('cors');
 require('dotenv').config();
 const path = require('path');
-const bodyParser = require("body-parser");
-
-const port = process.env.PORT || 3000;
-const mongoUri = process.env.MONGO_URI;
-
-// Serve static files
-app.use(express.static(path.join(__dirname, '../Frontend/views'))); // Serve HTML files
-app.use('/scripts', express.static(path.join(__dirname, '../Frontend/scripts'))); // Serve JavaScript files
 
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 
-//------------------------------------------------
-//Setup
+const port = process.env.PORT || 3000;
+const mongoUri = process.env.MONGO_URI;
 
-// Initialize MongoDB connection
+app.use(cors({
+    origin: "*", // Allow all origins (for development)
+    methods: "GET,POST",
+    allowedHeaders: "Content-Type"
+}));
+
+
 async function initMongoDB() {
     try {
         await mongoose.connect(mongoUri, {
@@ -30,77 +28,20 @@ async function initMongoDB() {
         console.log('✅ Connected to MongoDB!');
     } catch (err) {
         console.error("❌ Connection error:", err);
-        process.exit(1);
+        process.exit(1); // Exit if MongoDB connection fails
     }
 }
 
 // Set up Session Middleware to Track Session Expiration
-const MongoDBStore = require('connect-mongodb-session')(session);
-
-const store = new MongoDBStore({
-    uri: process.env.MONGO_URI,
-    collection: 'sessions'
-});
-
 app.use(session({
     secret: process.env.SESSION_SECRET || 'defaultSecretKey',
     resave: false,
     saveUninitialized: false,
-    store: store,
     cookie: {
-        maxAge: 1 * 60 * 60 * 1000, // 1 hour
+        maxAge: 1 * 60 * 60 * 1000, // Session expires in 1 hour (1 hour * 60 minutes * 60 seconds * 1000 ms)
         httpOnly: true
     }
 }));
-
-
-// Middleware to make user available in all templates (must be after session middleware)
-app.use((req, res, next) => {
-    res.locals.user = req.session.user || null;
-    next();
-});
-
-// Middleware
-app.use(cors({
-    origin: "*", // Allow all origins (for development)
-    methods: "GET,POST",
-    allowedHeaders: "Content-Type"
-}));
-
-// Enable CORS for frontend requests
-app.use(bodyParser.json()); // Parse JSON request bodies
-
-//------------------------------------------------
-//Routing
-
-// Import routes
-const signupRoute = require('./api/signupRoute');
-const loginRoute = require('./api/loginRoute');
-const transcribeRoute = require('./api/transcribe');
-
-app.use('/signup', signupRoute);
-app.use('/login', loginRoute);
-app.use('/transcribe', transcribeRoute);
-
-// Route to handle the base page
-app.get("/", (req, res) => {
-    if (!req.session.isLoggedIn) {
-        return res.sendFile(path.join(__dirname, '../Frontend/views', 'index.html'));
-    } else {
-        return res.sendFile(path.join(__dirname, '../Frontend/views', 'home.html'));
-    }
-});
-
-// Route to handle the home page
-app.get("/home", (req, res) => {
-    if (!req.session.isLoggedIn) {
-        return res.redirect('/index.html'); // If not logged in, go to index.html
-    }
-    return res.sendFile(path.join(__dirname, '../Frontend/views', 'home.html')); // Serve home.html if logged in
-});
-
-//------------------------------------------------
-//request that aren't handled in the route files
 
 // Middleware to make user available in all templates (must be after session middleware)
 app.use((req, res, next) => {
@@ -114,9 +55,9 @@ const userSchema = new mongoose.Schema({
     password: { type: String, required: true }
 });
 
-const User = mongoose.models.User || mongoose.model('User', userSchema);
+const User = mongoose.model('User', userSchema);
 
-// Handle signup requests, shouldn't this be in the signupRoute.js file?
+// Handle signup requests
 app.post("/api/signup", async (req, res) => {
     const { email, password } = req.body;
 
@@ -138,7 +79,6 @@ app.post("/api/signup", async (req, res) => {
         });
 
         await newUser.save();
-
         console.log("User signed up successfully:", newUser);
         res.status(201).json({ message: "Signup successful!" });
     } catch (error) {
@@ -184,8 +124,6 @@ app.get("/api/user", (req, res) => {
         res.json({ success: false, message: "No user logged in" });
     }
 });
-
-//------------------------------------------------
 
 // Start Express Server AFTER DB Connection
 initMongoDB().then(() => {
