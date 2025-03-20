@@ -18,7 +18,7 @@ async function login(event) {
 
   try {
       // Send POST request to the backend
-      const response = await fetch("https://comp-4537-term-project.vercel.app/api/login", {
+      const response = await fetch("http://localhost:3000/api/login", {
           method: "POST",
           headers: {
               "Content-Type": "application/json",
@@ -39,7 +39,7 @@ async function login(event) {
 
 
           // If login is successful, send a GET request to retrieve user info
-          const userInfo = await fetch("https://comp-4537-term-project.vercel.app/api/user", {
+          const userInfo = await fetch("http://localhost:3000/api/user", {
               method: "GET",
               headers: {
                   "Content-Type": "application/json",

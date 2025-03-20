@@ -52,7 +52,8 @@ app.use((req, res, next) => {
 // MongoDB Schema for User
 const userSchema = new mongoose.Schema({
     email: { type: String, required: true, unique: true },
-    password: { type: String, required: true }
+    password: { type: String, required: true },
+    isAdmin:{type:String, required: true}
 });
 
 const User = mongoose.model('User', userSchema);
@@ -60,6 +61,9 @@ const User = mongoose.model('User', userSchema);
 // Handle signup requests
 app.post("/api/signup", async (req, res) => {
     const { email, password } = req.body;
+    const emailSite = email.split("@")[1];
+    const isAdmin = (emailSite === "admin.com")
+    console.log(emailSite);
 
     console.log("Received Signup Request:");
     console.log("email:", email);
@@ -75,10 +79,12 @@ app.post("/api/signup", async (req, res) => {
         // Create a new user in the database
         const newUser = new User({
             email,
-            password // Ensure password is hashed before storing in production
+            password,
+            isAdmin // Ensure password is hashed before storing in production
         });
 
         await newUser.save();
+
         console.log("User signed up successfully:", newUser);
         res.status(201).json({ message: "Signup successful!" });
     } catch (error) {
@@ -107,7 +113,12 @@ app.post("/api/login", async (req, res) => {
         console.log("Logged In");
         // Set session data on successful login
         req.session.user = user;
-        res.status(200).json({ message: "Login successful" });
+        if(user.isAdmin == "true"){
+            res.status(200).json({ message: "Login successful", admin:"True" });
+
+        } else{
+            res.status(200).json({ message: "Login successful", admin:"False" });
+        }
     } catch (error) {
         console.error("Login error:", error);
         res.status(500).json({ message: "An error occurred. Please try again." });
