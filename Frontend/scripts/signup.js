@@ -37,7 +37,7 @@ async function SignUp(event) {
 
     // Send data to backend
     try {
-        const response = await fetch("http://localhost:3000/api/signup", { // Change https to http
+        const response = await fetch("https://comp-4537-term-project.vercel.app/api/signup", { // Change https to http
             method: "POST",
             headers: {
                 "Content-Type": "application/json"

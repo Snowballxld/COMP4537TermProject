@@ -5,20 +5,22 @@ const app = express();
 const cors = require('cors');
 require('dotenv').config();
 const path = require('path');
-
-app.use(express.urlencoded({ extended: true }));
-app.use(express.json());
+const bodyParser = require("body-parser");
 
 const port = process.env.PORT || 3000;
 const mongoUri = process.env.MONGO_URI;
 
-app.use(cors({
-    origin: "*", // Allow all origins (for development)
-    methods: "GET,POST",
-    allowedHeaders: "Content-Type"
-}));
+// Serve static files
+app.use(express.static(path.join(__dirname, '../Frontend/views'))); // Serve HTML files
+app.use('/scripts', express.static(path.join(__dirname, '../Frontend/scripts'))); // Serve JavaScript files
 
+app.use(express.urlencoded({ extended: true }));
+app.use(express.json());
 
+//------------------------------------------------
+//Setup
+
+// Initialize MongoDB connection
 async function initMongoDB() {
     try {
         await mongoose.connect(mongoUri, {
@@ -28,7 +30,7 @@ async function initMongoDB() {
         console.log('✅ Connected to MongoDB!');
     } catch (err) {
         console.error("❌ Connection error:", err);
-        process.exit(1); // Exit if MongoDB connection fails
+        process.exit(1);
     }
 }
 
@@ -49,21 +51,65 @@ app.use((req, res, next) => {
     next();
 });
 
+// Middleware
+app.use(cors({
+    origin: "*", // Allow all origins (for development)
+    methods: "GET,POST",
+    allowedHeaders: "Content-Type"
+}));
+
+// Enable CORS for frontend requests
+app.use(bodyParser.json()); // Parse JSON request bodies
+
+//------------------------------------------------
+//Routing
+
+// Import routes
+const signupRoute = require('./routes/signupRoute');
+const loginRoute = require('./routes/loginRoute');
+const transcribeRoute = require('./routes/transcribe');
+
+app.use('/signup', signupRoute);
+app.use('/login', loginRoute);
+app.use('/transcribe', transcribeRoute);
+
+// Route to handle the base page
+app.get("/", (req, res) => {
+    if (!req.session.isLoggedIn) {
+        return res.sendFile(path.join(__dirname, '../Frontend/views', 'index.html'));
+    } else {
+        return res.sendFile(path.join(__dirname, '../Frontend/views', 'home.html'));
+    }
+});
+
+// Route to handle the home page
+app.get("/home", (req, res) => {
+    if (!req.session.isLoggedIn) {
+        return res.redirect('/index.html'); // If not logged in, go to index.html
+    }
+    return res.sendFile(path.join(__dirname, '../Frontend/views', 'home.html')); // Serve home.html if logged in
+});
+
+//------------------------------------------------
+//request that aren't handled in the route files
+
+// Middleware to make user available in all templates (must be after session middleware)
+app.use((req, res, next) => {
+    res.locals.user = req.session.user || null;
+    next();
+});
+
 // MongoDB Schema for User
 const userSchema = new mongoose.Schema({
     email: { type: String, required: true, unique: true },
-    password: { type: String, required: true },
-    isAdmin:{type:String, required: true}
+    password: { type: String, required: true }
 });
 
-const User = mongoose.model('User', userSchema);
+const User = mongoose.models.User || mongoose.model('User', userSchema);
 
-// Handle signup requests
+// Handle signup requests, shouldn't this be in the signupRoute.js file?
 app.post("/api/signup", async (req, res) => {
     const { email, password } = req.body;
-    const emailSite = email.split("@")[1];
-    const isAdmin = (emailSite === "admin.com")
-    console.log(emailSite);
 
     console.log("Received Signup Request:");
     console.log("email:", email);
@@ -79,8 +125,7 @@ app.post("/api/signup", async (req, res) => {
         // Create a new user in the database
         const newUser = new User({
             email,
-            password,
-            isAdmin // Ensure password is hashed before storing in production
+            password // Ensure password is hashed before storing in production
         });
 
         await newUser.save();
@@ -113,12 +158,7 @@ app.post("/api/login", async (req, res) => {
         console.log("Logged In");
         // Set session data on successful login
         req.session.user = user;
-        if(user.isAdmin == "true"){
-            res.status(200).json({ message: "Login successful", admin:"True" });
-
-        } else{
-            res.status(200).json({ message: "Login successful", admin:"False" });
-        }
+        res.status(200).json({ message: "Login successful" });
     } catch (error) {
         console.error("Login error:", error);
         res.status(500).json({ message: "An error occurred. Please try again." });
@@ -135,6 +175,8 @@ app.get("/api/user", (req, res) => {
         res.json({ success: false, message: "No user logged in" });
     }
 });
+
+//------------------------------------------------
 
 // Start Express Server AFTER DB Connection
 initMongoDB().then(() => {
