@@ -35,15 +35,24 @@ async function initMongoDB() {
 }
 
 // Set up Session Middleware to Track Session Expiration
+const MongoDBStore = require('connect-mongodb-session')(session);
+
+const store = new MongoDBStore({
+    uri: process.env.MONGO_URI,
+    collection: 'sessions'
+});
+
 app.use(session({
     secret: process.env.SESSION_SECRET || 'defaultSecretKey',
     resave: false,
     saveUninitialized: false,
+    store: store,
     cookie: {
-        maxAge: 1 * 60 * 60 * 1000, // Session expires in 1 hour (1 hour * 60 minutes * 60 seconds * 1000 ms)
+        maxAge: 1 * 60 * 60 * 1000, // 1 hour
         httpOnly: true
     }
 }));
+
 
 // Middleware to make user available in all templates (must be after session middleware)
 app.use((req, res, next) => {
