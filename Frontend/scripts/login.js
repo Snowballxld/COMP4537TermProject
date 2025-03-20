@@ -1,5 +1,5 @@
 if (sessionStorage.getItem("isLoggedIn") === "true") {
-    window.location.href = "/home.html";
+    window.location.href = "views/home.html";
 }
 
 async function login(event) {
@@ -34,7 +34,7 @@ async function login(event) {
          if(temp.admin == "True"){
             window.location.href = "views/admin.html";
          } else{
-            window.location.href = "/home.html";
+            window.location.href = "views/home.html";
          }
 
 
