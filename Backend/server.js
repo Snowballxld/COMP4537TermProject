@@ -74,9 +74,9 @@ app.use(bodyParser.json()); // Parse JSON request bodies
 //Routing
 
 // Import routes
-const signupRoute = require('./routes/signupRoute');
-const loginRoute = require('./routes/loginRoute');
-const transcribeRoute = require('./routes/transcribe');
+const signupRoute = require('./api/signupRoute');
+const loginRoute = require('./api/loginRoute');
+const transcribeRoute = require('./api/transcribe');
 
 app.use('/signup', signupRoute);
 app.use('/login', loginRoute);
