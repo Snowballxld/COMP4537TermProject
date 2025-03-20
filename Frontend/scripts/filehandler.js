@@ -14,7 +14,7 @@ async function uploadAudio() {
 
         console.log("Pee");
 
-        const response = await fetch('https://comp-4537-term-project.vercel.app//transcribe/api/transcribe', {
+        const response = await fetch('https://comp-4537-term-project.vercel.app/transcribe/api/transcribe', {
             method: 'POST',
             body: formData
         });
