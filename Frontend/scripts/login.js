@@ -34,7 +34,7 @@ async function login(event) {
          if(temp.admin == "True"){
             window.location.href = "views/admin.html";
          } else{
-            window.location.href = "views/home.html";
+            window.location.href = "/home.html";
          }
 
 
