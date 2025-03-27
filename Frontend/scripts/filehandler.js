@@ -12,14 +12,14 @@ async function uploadAudio() {
 
     try {
 
-        console.log("Pee");
+        console.log("uploading");
 
-        const response = await fetch('https://comp-4537-term-project.vercel.app//transcribe/api/transcribe', {
+        const response = await fetch('/transcribe/api/transcribe', {
             method: 'POST',
             body: formData
         });
 
-        console.log("Poop");
+        console.log("processing");
 
         const data = await response.json();
 

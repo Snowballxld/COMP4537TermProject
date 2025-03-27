@@ -15,11 +15,6 @@ const MODEL_PATH = path.join(process.cwd(), '/models/whisper-small'); // Ensure 
 // Set up multer for file upload
 const upload = multer({ dest: 'uploads/' });
 
-// Route to serve the transcribe page
-router.get("/", (req, res) => {
-    res.sendFile(path.join(__dirname, '../../Frontend/views', 'transcribe.html')); // Serve the transcribe.html page
-});
-
 // Route to handle audio file upload and transcription
 router.post('/api/transcribe', upload.single('audio'), async (req, res) => {
     if (!req.file) {

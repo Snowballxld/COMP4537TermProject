@@ -12,12 +12,23 @@ app.use(express.json());
 const port = process.env.PORT || 3000;
 const mongoUri = process.env.MONGO_URI;
 
+// Routing for API Call
+const transcribeRoutes = require('./routes/transcribe');
+app.use('/transcribe', transcribeRoutes);
+
+// Serve static files from the Frontend folder
+app.use(express.static(path.join(__dirname, '../Frontend')));
+
+// Route to serve transcribe.html
+app.get('/transcribe', (req, res) => {
+    res.sendFile(path.join(__dirname, '../Frontend/views/transcribe.html'));
+});
+
 app.use(cors({
     origin: "*", // Allow all origins (for development)
     methods: "GET,POST",
     allowedHeaders: "Content-Type"
 }));
-
 
 async function initMongoDB() {
     try {
@@ -53,7 +64,7 @@ app.use((req, res, next) => {
 const userSchema = new mongoose.Schema({
     email: { type: String, required: true, unique: true },
     password: { type: String, required: true },
-    isAdmin:{type:String, required: true}
+    isAdmin: { type: String, required: true }
 });
 
 const User = mongoose.model('User', userSchema);
@@ -113,11 +124,11 @@ app.post("/api/login", async (req, res) => {
         console.log("Logged In");
         // Set session data on successful login
         req.session.user = user;
-        if(user.isAdmin == "true"){
-            res.status(200).json({ message: "Login successful", admin:"True" });
+        if (user.isAdmin == "true") {
+            res.status(200).json({ message: "Login successful", admin: "True" });
 
-        } else{
-            res.status(200).json({ message: "Login successful", admin:"False" });
+        } else {
+            res.status(200).json({ message: "Login successful", admin: "False" });
         }
     } catch (error) {
         console.error("Login error:", error);
