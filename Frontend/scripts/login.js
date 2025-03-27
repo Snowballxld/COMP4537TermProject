@@ -32,9 +32,9 @@ async function login(event) {
          const temp = await response.json();
          console.log(temp.admin)
          if(temp.admin == "True"){
-            window.location.href = "/Frontend/views/admin.html";
+            window.location.href = "/views/admin.html";
          } else{
-            window.location.href = "/Frontend/views/home.html";
+            window.location.href = "/views/home.html";
          }
 
 
