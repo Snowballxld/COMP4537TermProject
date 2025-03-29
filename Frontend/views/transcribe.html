@@ -5,14 +5,79 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Speech to Text</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .section {
+            margin-bottom: 30px;
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+
+        button {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-top: 10px;
+            margin-right: 10px;
+        }
+
+        button:hover {
+            background-color: #45a049;
+        }
+
+        #recordButton.recording {
+            background-color: #f44336;
+        }
+
+        #recordButton.recording:hover {
+            background-color: #d32f2f;
+        }
+
+        #transcription {
+            margin-top: 20px;
+            padding: 15px;
+            background-color: #f9f9f9;
+            border-radius: 4px;
+            min-height: 100px;
+            white-space: pre-wrap;
+        }
+
+        #recordingStatus {
+            font-style: italic;
+            color: #666;
+        }
+    </style>
 </head>
 
 <body>
-    <h1>Upload An Audio File</h1>
-    <input type="file" id="audioFile" accept=".wav, .mp3, .m4a">
-    <button onclick="uploadAudio()">Transcribe</button>
-    <h2>Transcription:</h2>
-    <p id="transcription"></p>
+    <h1>Speech to Text Converter</h1>
+
+    <div class="section">
+        <h2>Record Your Voice</h2>
+        <button id="recordButton">Start Recording</button>
+        <p id="recordingStatus">Microphone: Ready</p>
+    </div>
+
+    <div class="section">
+        <h2>Upload Audio File</h2>
+        <input type="file" id="audioFile" accept=".wav,.mp3,.m4a,.ogg,.webm">
+        <button id="uploadButton">Transcribe File</button>
+    </div>
+
+    <div class="section">
+        <h2>Transcription Result</h2>
+        <div id="transcription"></div>
+    </div>
 
     <script src="/scripts/filehandler.js"></script>
 </body>
