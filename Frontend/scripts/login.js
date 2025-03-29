@@ -1,6 +1,6 @@
-if (sessionStorage.getItem("isLoggedIn") === "true") {
-    window.location.href = "/views/home.html";
-}
+// if (sessionStorage.getItem("isLoggedIn") === "true") {
+//     window.location.href = "/views/home.html";
+// }
 
 async function login(event) {
   event.preventDefault(); // Prevent form from submitting
@@ -24,6 +24,7 @@ async function login(event) {
               "Content-Type": "application/json",
           },
           body: JSON.stringify(requestData),
+          credentials: "include" 
       });
 
       if (response.ok) {
@@ -31,7 +32,7 @@ async function login(event) {
          sessionStorage.setItem("isLoggedIn", "true");
          const temp = await response.json();
          console.log(temp.admin)
-         if(temp.admin == "True"){
+         if(temp.admin === "True"){
             window.location.href = "/views/admin.html";
          } else{
             window.location.href = "/views/home.html";
@@ -44,6 +45,7 @@ async function login(event) {
               headers: {
                   "Content-Type": "application/json",
               },
+              credentials: "include"
           });
           const data = await userInfo.json();
           if (data.success) {

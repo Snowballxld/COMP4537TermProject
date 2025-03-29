@@ -3,16 +3,23 @@ const session = require('express-session');
 const mongoose = require('mongoose');
 const { User, ResetToken } = require("./models");
 
+
+const jwt = require('jsonwebtoken');
+const cookieParser = require('cookie-parser');
+const crypto = require('crypto');
+
 const app = express();
 const cors = require('cors');
 require('dotenv').config();
 const path = require('path');
+
 
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 
 const port = process.env.PORT || 3000;
 const mongoUri = process.env.MONGO_URI;
+const JWT_SECRET = process.env.JWT_SECRET || crypto.randomBytes(64).toString('hex');
 
 // Routing for API Call
 const transcribeRoutes = require('./routes/transcribe');
@@ -31,11 +38,13 @@ app.get('/transcribe', (req, res) => {
 });
 
 app.use(cors({
-    origin: "*", // Allow all origins (for development)
+    origin: "http://localhost:5500", // Allow all origins (for development)
     methods: "GET,POST,PUT, DELETE,OPTIONS",
     allowedHeaders: "Content-Type, Authorization",
     credentials: true
 }));
+
+
 
 async function initMongoDB() {
     try {
@@ -50,37 +59,7 @@ async function initMongoDB() {
     }
 }
 
-// Set up Session Middleware to Track Session Expiration
-app.use(session({
-    secret: process.env.SESSION_SECRET || 'defaultSecretKey',
-    resave: false,
-    saveUninitialized: false,
-    cookie: {
-        maxAge: 1 * 60 * 60 * 1000, // Session expires in 1 hour (1 hour * 60 minutes * 60 seconds * 1000 ms)
-        httpOnly: true
-    }
-}));
-
-// Middleware to make user available in all templates (must be after session middleware)
-app.use((req, res, next) => {
-    res.locals.user = req.session.user || null;
-    next();
-});
-
-// MongoDB Schema for User
-// const userSchema = new mongoose.Schema({
-//     email: { type: String, required: true, unique: true },
-//     password: { type: String, required: true },
-//     isAdmin: { type: String, required: true }
-// });
-// const User = mongoose.model('User', userSchema);
-// // MongoDB Schema for resetPassword token
-// const resetTokenSchema = new mongoose.Schema({
-//     email: { type: String, required: true, unique: true },
-//     token: { type: String, required: true },
-//     expiry: {type: Date, default: Date.now, expires: '1d'}
-// });
-// const ResetToken = mongoose.model('resetToken', resetTokenSchema);
+app.use(cookieParser());
 
 // Handle signup requests
 app.post("/api/signup", async (req, res) => {
@@ -110,9 +89,23 @@ app.post("/api/signup", async (req, res) => {
         });
 
         await newUser.save();
-
         console.log("User signed up successfully:", newUser);
+        const token = jwt.sign(
+            { email: newUser.email, isAdmin: newUser.isAdmin },
+            JWT_SECRET,
+            { expiresIn: "1h" }
+        );
+        // Set JWT as an HTTP-only cookie
+        res.cookie("token", token, {
+            httpOnly: true,
+            secure: false, // Set to true in production if you use HTTPS, will do it later
+            // maxAge: 5000 // I was just testing, so I set it to 5 seconds
+            maxAge: 60 * 60 * 1000 // 1 hour in ms
+        });
+
+
         res.status(201).json({ message: "Signup successful!" });
+
     } catch (error) {
         console.error("Error during signup:", error);
         res.status(500).json({ message: "An error occurred. Please try again." });
@@ -131,15 +124,28 @@ app.post("/api/login", async (req, res) => {
 
         // Compare hashed password from the client with the hashed password in the database
         const hashedPasswordFromDB = user.password;
-        const hashedPasswordFromClient = password; // The password sent from the client is already hashed
+        const hashedPasswordFromClient = password; 
 
         if (hashedPasswordFromClient !== hashedPasswordFromDB) {
             return res.status(401).json({ message: "Invalid credentials" });
         }
         console.log("Logged In");
-        // Set session data on successful login
-        req.session.user = user;
-        if(user.isAdmin == "true"){
+
+        // Generate JWT token
+        const token = jwt.sign(
+            { email: user.email, isAdmin: user.isAdmin },
+            JWT_SECRET,
+            { expiresIn: "1h" }
+        );
+        // set jwt as an http cookie
+        res.cookie("token", token, {
+            httpOnly: true,
+            secure: false, // Change to true when serving over HTTPS in production
+            maxAge: 60 * 60 * 1000
+            // maxAge: 5000 // I was just testing, so I set it to 5 seconds
+        });
+
+        if(user.isAdmin === "true"){
             res.status(200).json({ message: "Login successful", admin:"True" });
 
         } else{
@@ -151,16 +157,26 @@ app.post("/api/login", async (req, res) => {
     }
 });
 
-// Get user info if logged in
 app.get("/api/user", (req, res) => {
-    if (req.session.user) {
-        // User is logged in
-        res.json({ success: true, user: req.session.user });
-    } else {
-        // Not logged in
-        res.json({ success: false, message: "No user logged in" });
+    const token = req.cookies.token;
+    if (!token) {
+        return res.json({ success: false, message: "No user logged in" });
+    }
+
+    try {
+        const decoded = jwt.verify(token, JWT_SECRET);
+        res.json({
+            success: true,
+            user: {
+                email: decoded.email,
+                isAdmin: decoded.isAdmin
+            }
+        });
+    } catch (err) {
+        res.json({ success: false, message: "Invalid token" });
     }
 });
+
 
 // Start Express Server AFTER DB Connection
 initMongoDB().then(() => {

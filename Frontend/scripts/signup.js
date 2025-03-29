@@ -1,7 +1,7 @@
 console.log("YOOO");
-if (sessionStorage.getItem("isLoggedIn") === "true") {
-    window.location.href = "/views/home.html";
-}
+// if (sessionStorage.getItem("isLoggedIn") === "true") {
+//     window.location.href = "/views/home.html";
+// }
 async function SignUp(event) {
     event.preventDefault();
     console.log("YOOOO");
@@ -42,7 +42,8 @@ async function SignUp(event) {
             headers: {
                 "Content-Type": "application/json"
             },
-            body: JSON.stringify(requestData)
+            body: JSON.stringify(requestData),
+            credentials: "include" 
         });
 
         if (response.ok) {
