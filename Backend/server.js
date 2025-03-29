@@ -1,6 +1,8 @@
 const express = require('express');
 const session = require('express-session');
 const mongoose = require('mongoose');
+const { User, ResetToken } = require("./models");
+
 const app = express();
 const cors = require('cors');
 require('dotenv').config();
@@ -15,6 +17,10 @@ const mongoUri = process.env.MONGO_URI;
 // Routing for API Call
 const transcribeRoutes = require('./routes/transcribe');
 app.use('/transcribe', transcribeRoutes);
+// const loginRoutes = require("./routes/loginRoute");
+// app.use('/api/login', loginRoutes);
+const forgotRoutes = require("./routes/forgotRoute");
+app.use('/api/reset', forgotRoutes);
 
 // Serve static files from the Frontend folder
 app.use(express.static(path.join(__dirname, '../Frontend')));
@@ -26,8 +32,9 @@ app.get('/transcribe', (req, res) => {
 
 app.use(cors({
     origin: "*", // Allow all origins (for development)
-    methods: "GET,POST",
-    allowedHeaders: "Content-Type"
+    methods: "GET,POST,PUT, DELETE,OPTIONS",
+    allowedHeaders: "Content-Type, Authorization",
+    credentials: true
 }));
 
 async function initMongoDB() {
@@ -61,26 +68,34 @@ app.use((req, res, next) => {
 });
 
 // MongoDB Schema for User
-const userSchema = new mongoose.Schema({
-    email: { type: String, required: true, unique: true },
-    password: { type: String, required: true },
-    isAdmin: { type: String, required: true }
-});
-
-const User = mongoose.model('User', userSchema);
+// const userSchema = new mongoose.Schema({
+//     email: { type: String, required: true, unique: true },
+//     password: { type: String, required: true },
+//     isAdmin: { type: String, required: true }
+// });
+// const User = mongoose.model('User', userSchema);
+// // MongoDB Schema for resetPassword token
+// const resetTokenSchema = new mongoose.Schema({
+//     email: { type: String, required: true, unique: true },
+//     token: { type: String, required: true },
+//     expiry: {type: Date, default: Date.now, expires: '1d'}
+// });
+// const ResetToken = mongoose.model('resetToken', resetTokenSchema);
 
 // Handle signup requests
 app.post("/api/signup", async (req, res) => {
-    const { email, password } = req.body;
-    const emailSite = email.split("@")[1];
-    const isAdmin = (emailSite === "admin.com")
-    console.log(emailSite);
-
-    console.log("Received Signup Request:");
-    console.log("email:", email);
-    console.log("Hashed Password:", password);
 
     try {
+        const { email, password } = req.body;
+        const emailSite = email.split("@")[1];
+        const isAdmin = (emailSite === "admin.com")
+        console.log(emailSite);
+
+        console.log("Received Signup Request:");
+        console.log("email:", email);
+        console.log("Hashed Password:", password);
+
+
         // Check if the user already exists in MongoDB
         const existingUser = await User.findOne({ email });
         if (existingUser) {
@@ -124,11 +139,11 @@ app.post("/api/login", async (req, res) => {
         console.log("Logged In");
         // Set session data on successful login
         req.session.user = user;
-        if (user.isAdmin == "true") {
-            res.status(200).json({ message: "Login successful", admin: "True" });
+        if(user.isAdmin == "true"){
+            res.status(200).json({ message: "Login successful", admin:"True" });
 
-        } else {
-            res.status(200).json({ message: "Login successful", admin: "False" });
+        } else{
+            res.status(200).json({ message: "Login successful", admin:"False" });
         }
     } catch (error) {
         console.error("Login error:", error);
@@ -154,3 +169,5 @@ initMongoDB().then(() => {
         console.log(`🚀 Server running on http://localhost:${port}`);
     });
 });
+
+
