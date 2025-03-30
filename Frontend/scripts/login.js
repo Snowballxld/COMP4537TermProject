@@ -1,6 +1,9 @@
-// if (sessionStorage.getItem("isLoggedIn") === "true") {
-//     window.location.href = "/views/home.html";
-// }
+function showWarning(message) {
+    const errorDiv = document.getElementById("error-message");
+    if (errorDiv) {
+        errorDiv.innerText = message;
+    }
+}
 
 async function login(event) {
   event.preventDefault(); // Prevent form from submitting
@@ -28,14 +31,12 @@ async function login(event) {
       });
 
       if (response.ok) {
-         console.log("sigma");
          sessionStorage.setItem("isLoggedIn", "true");
          const temp = await response.json();
-         console.log(temp.admin)
          if(temp.admin === "True"){
             window.location.href = "/views/admin.html";
          } else{
-            window.location.href = "/views/home.html";
+            window.location.href = "/views/transcribe.html";
          }
 
 
@@ -49,18 +50,28 @@ async function login(event) {
           });
           const data = await userInfo.json();
           if (data.success) {
-             console.log("data success");
-              alert("Login successful! Welcome " + data.user.email);
-              // Redirect user to another page, e.g., Dashboard
-              
+              showWarning(MESSAGES.warning_login_success + data.user.email);
           }
       } else {
-          // Handle login failure
-          alert("Login failed. Please check your credentials and try again.");
+        switch (response.status) {
+            case 400:
+                showWarning(MESSAGES.warning_400);
+                break;
+            case 403:
+                showWarning(MESSAGES.warning_403);
+                break;
+            case 404:
+                showWarning(MESSAGES.warning_404);
+                break;
+            case 500:
+                showWarning(MESSAGES.warning_500);
+                break;
+            default:
+                showWarning(MESSAGES.warning_login);
+        }
       }
   } catch (error) {
-      console.error("Error:", error);
-      alert("An error occurred. Please try again later.");
+      showWarning(MESSAGES.warning_generic);
   }
 }
 

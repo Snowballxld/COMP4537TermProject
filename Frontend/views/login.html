@@ -2,21 +2,20 @@
 <html lang="en">
 <head>
     <title>Login</title>
+    <link rel="stylesheet" href="../css/style.css">
     <script src="../lang/en/en.js"></script>
     <script src="../scripts/login.js" defer></script>
 </head>
 <body>
     <h2>Login</h2>
-    <!-- Container for error messages -->
-    <div id="error-message" style="color: red;"></div>
     <form onsubmit="login(event)">
         <input type="text" id="email" placeholder="Email" required>
         <input type="password" id="password" placeholder="Password" required>
         <button type="submit">Login</button>
     </form>
-
     <a href="./signUp.html">To Sign Up</a>
     </br>
     <a href="./forgotPassword.html">To Forgot Password</a>
+    <div id="error-message"></div>
 </body>
 </html>

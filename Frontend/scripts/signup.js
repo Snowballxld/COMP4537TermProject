@@ -1,23 +1,24 @@
-console.log("YOOO");
-// if (sessionStorage.getItem("isLoggedIn") === "true") {
-//     window.location.href = "/views/home.html";
-// }
+
+function showWarning(message) {
+    const errorDiv = document.getElementById("error-message");
+    if (errorDiv) {
+        errorDiv.innerText = message;
+    } 
+}
 async function SignUp(event) {
     event.preventDefault();
-    console.log("YOOOO");
-
     const email = document.getElementById("email").value;
     const password = document.getElementById("password").value;
-    console.log(email);
 
     // Validate the email format
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(email)) {
-        alert("Please enter a valid email address.");
+        showWarning(MESSAGES.warning_invalid_email);
         return;
     }
 
     // Hash the password using SHA-256
+
     async function hashPassword(password) {
         const encoder = new TextEncoder();
         const data = encoder.encode(password);
@@ -28,7 +29,6 @@ async function SignUp(event) {
     }
     
     const hashedPassword = await hashPassword(password);
-    console.log(hashedPassword);
 
     const requestData = {
         email: email,
@@ -47,14 +47,28 @@ async function SignUp(event) {
         });
 
         if (response.ok) {
-            sessionStorage.setItem("isLoggedIn", "true");
-            alert("Signup successful!");
-            window.location.href = "/views/home.html";
+            // sessionStorage.setItem("isLoggedIn", "true"); don't need
+            showWarning(MESSAGES.warning_login_success);
+            window.location.href = "/views/transcribe.html";
         } else {
-            alert("Signup failed. Please try again.");
+            switch (response.status) {
+                case 400:
+                    showWarning(MESSAGES.warning_400);
+                    break;
+                case 404:
+                    showWarning(MESSAGES.warning_user_not_found);
+                    break;
+                case 409:
+                    showWarning(MESSAGES.warning_user_already_exists);
+                    break;
+                case 500:
+                    showWarning(MESSAGES.warning_500);
+                    break;
+                default:
+                    showWarning(MESSAGES.warning_generic);
+            }
         }
     } catch (error) {
-        console.error("Error:", error);
-        alert("An error occurred. Please try again later.");
+        showWarning(MESSAGES.warning_generic);
     }
 }
