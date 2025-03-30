@@ -1,4 +1,5 @@
 // Recording variables
+const site = "http://localhost:3000"
 let mediaRecorder;
 let audioStream;
 let audioChunks = [];
@@ -197,7 +198,7 @@ async function sendAudioToServer(audioBlob, filename) {
     formData.append('audio', audioBlob, filename);
 
     try {
-        const response = await fetch('/transcribe/api/transcribe', {
+        const response = await fetch(`${site}/transcribe/api/transcribe`, {
             method: 'POST',
             body: formData
         });

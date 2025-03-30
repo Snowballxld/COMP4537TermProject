@@ -61,6 +61,25 @@ async function initMongoDB() {
 
 app.use(cookieParser());
 
+//---------- Middlewares ---------------//
+
+//admin middleware
+const isAdminMiddleware = (req, res, next) => {
+    const token = req.cookies.token;
+    if (!token) return res.status(401).json({ success: false, message: "Unauthorized" });
+
+    try {
+        const decoded = jwt.verify(token, JWT_SECRET);
+        if (!decoded.isAdmin) {
+            return res.status(403).json({ success: false, message: "Forbidden" });
+        }
+        req.user = decoded;
+        next();
+    } catch (error) {
+        return res.status(401).json({ success: false, message: "Invalid token" });
+    }
+};
+
 // Handle signup requests
 app.post("/api/signup", async (req, res) => {
 
@@ -176,6 +195,27 @@ app.get("/api/user", (req, res) => {
         res.json({ success: false, message: "Invalid token" });
     }
 });
+
+// Get list of all users (Admin only)
+app.get("/api/admin/users", isAdminMiddleware, async (req, res) => {
+    try {
+        const users = await User.find({}, "email isAdmin"); // Fetch only necessary fields
+        res.json({ success: true, users });
+    } catch (error) {
+        res.status(500).json({ success: false, message: "Error fetching users" });
+    }
+});
+
+// Delete user (Admin only)
+app.delete("/api/admin/delete/:id", isAdminMiddleware, async (req, res) => {
+    try {
+        await User.findByIdAndDelete(req.params.id);
+        res.json({ success: true, message: "User deleted" });
+    } catch (error) {
+        res.status(500).json({ success: false, message: "Error deleting user" });
+    }
+});
+
 
 
 // Start Express Server AFTER DB Connection

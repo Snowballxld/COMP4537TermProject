@@ -1,3 +1,5 @@
+const site = "http://localhost:3000"
+
 async function forgotPassword(event) {
     event.preventDefault(); // Prevent form from submitting
     const email = document.getElementById("email").value;
@@ -14,7 +16,7 @@ async function forgotPassword(event) {
   
     try {
         // Send POST request to the backend
-        const response = await fetch("http://localhost:3000/api/reset", {
+        const response = await fetch(`${site}/api/reset`, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
@@ -59,7 +61,7 @@ async function forgotPassword(event) {
   
     try {
         // Send POST request to the backend
-        const response = await fetch("http://localhost:3000/api/reset/resetPassword", {
+        const response = await fetch(`${site}/api/reset/resetPassword`, {
             method: "PUT",
             headers: {
                 "Content-Type": "application/json",
