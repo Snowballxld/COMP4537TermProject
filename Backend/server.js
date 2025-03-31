@@ -173,6 +173,7 @@ app.post("/api/login", async (req, res) => {
         res.cookie("token", token, {
             httpOnly: true,
             secure: true, // Change to true when serving over HTTPS in production
+            sameSite: "None", // check this to see if fixes problem
             maxAge: 60 * 60 * 1000
             // maxAge: 5000 // I was just testing, so I set it to 5 seconds
         });
