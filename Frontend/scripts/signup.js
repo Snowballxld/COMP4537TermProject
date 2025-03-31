@@ -1,4 +1,4 @@
-
+const site = "https://comp4537termproject-1.onrender.com"
 function showWarning(message) {
     const errorDiv = document.getElementById("error-message");
     if (errorDiv) {
@@ -37,7 +37,7 @@ async function SignUp(event) {
 
     // Send data to backend
     try {
-        const response = await fetch("http://localhost:3000/api/signup", { // Change https to http
+        const response = await fetch(`${site}/api/signup`, { // Change https to http
             method: "POST",
             headers: {
                 "Content-Type": "application/json"

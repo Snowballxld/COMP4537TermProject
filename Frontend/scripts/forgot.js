@@ -1,4 +1,4 @@
-const site = "http://localhost:3000"
+const site = "https://comp4537termproject-1.onrender.com"
 
 async function forgotPassword(event) {
     event.preventDefault(); // Prevent form from submitting

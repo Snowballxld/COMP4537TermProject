@@ -1,3 +1,5 @@
+const site = "https://comp4537termproject-1.onrender.com"
+
 function showWarning(message) {
     const errorDiv = document.getElementById("error-message");
     if (errorDiv) {
@@ -21,7 +23,7 @@ async function login(event) {
 
   try {
       // Send POST request to the backend
-      const response = await fetch("http://localhost:3000/api/login", {
+      const response = await fetch(`${site}/api/login`, {
           method: "POST",
           headers: {
               "Content-Type": "application/json",
@@ -41,7 +43,7 @@ async function login(event) {
 
 
           // If login is successful, send a GET request to retrieve user info
-          const userInfo = await fetch("http://localhost:3000/api/user", {
+          const userInfo = await fetch(`${site}/api/user`, {
               method: "GET",
               headers: {
                   "Content-Type": "application/json",

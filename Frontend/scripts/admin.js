@@ -1,5 +1,5 @@
 console.log('testing0')
-const site = "http://localhost:3000"
+const site = "https://comp4537termproject-1.onrender.com"
 document.addEventListener("DOMContentLoaded", async () => {
     try {
         // Check if the user is an admin
@@ -10,9 +10,9 @@ document.addEventListener("DOMContentLoaded", async () => {
 
         console.log("Full userData:", userData);
 
-        if (!userData || !userData.user || userData.user.isAdmin == "false") {
+        if (!userData || !userData.user || userData.user.isAdmin == "false" || userData.user.isAdmin == "undefined") {
             console.log('ohio asl wth')
-            alert("You do not have permission to view this page.");
+            alert("Error 403: You do not have permission to view this page.");
             window.location.href = "./home.html"; // Redirect non-admins
             return;
         }        

@@ -1,5 +1,5 @@
 // Recording variables
-const site = "http://localhost:3000"
+const site = "https://comp4537termproject-1.onrender.com"
 let mediaRecorder;
 let audioStream;
 let audioChunks = [];
