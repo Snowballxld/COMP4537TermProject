@@ -51,7 +51,7 @@ app.get('/transcribe', (req, res) => {
 });
 
 app.use(cors({
-    origin: "http://localhost:5500", // Allow all origins (for development)
+    origin: "https://4537projectfrontend.netlify.app", // Allow all origins (for development)
     methods: "GET,POST,PUT, DELETE,OPTIONS",
     allowedHeaders: "Content-Type, Authorization",
     credentials: true
