@@ -10,12 +10,12 @@ const cors = require('cors');
 const crypto = require("crypto");
 
 
-router.use(cors({
-    origin: "*", // Allow all origins (for development)
-    methods: "GET,POST,PUT, DELETE,OPTIONS",
-    allowedHeaders: "Content-Type, Authorization",
-    credentials: true
-}));
+// router.use(cors({
+//     origin: "*", // Allow all origins (for development)
+//     methods: "GET,POST,PUT, DELETE,OPTIONS",
+//     allowedHeaders: "Content-Type, Authorization",
+//     credentials: true
+// }));
 
 // POST: Handle login
 router.post("/", async (req, res) => {
