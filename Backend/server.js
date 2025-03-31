@@ -273,7 +273,9 @@ app.get("/api/admin/users", isAdminMiddleware, async (req, res) => {
             count.count = count.count + 1;
             await newEntry.save();
         }
-        res.json({ success: true, users });
+
+        const apis = await APICount.find({}, "api Method count"); // Fetch only necessary fields
+        res.json({ success: true, users, apis });
     } catch (error) {
         res.status(500).json({ success: false, message: MESSAGES.warning_error_fetching_users });
     }

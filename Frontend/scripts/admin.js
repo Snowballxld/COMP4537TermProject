@@ -23,7 +23,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         const usersData = await usersResponse.json();
 
         if (usersData.success) {
-            displayUsers(usersData.users);
+            displayUsers(usersData.users, usersData.apis);
         } else {
             alert("Failed to fetch users.");
         }
@@ -33,7 +33,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 });
 
 // Function to display users in the UI
-function displayUsers(users) {
+function displayUsers(users, apis) {
     const usersList = document.getElementById("usersList"); // Assume there's a div with this ID
     usersList.innerHTML = ""; // Clear existing content
 
@@ -44,6 +44,15 @@ function displayUsers(users) {
             <button onclick="deleteUser('${user._id}')">Delete</button>
         `;
         usersList.appendChild(userItem);
+    });
+
+    const apiList = document.getElementById("apiList"); // Assume there's a div with this ID
+    apis.forEach(api => {
+        const apiItem = document.createElement("div");
+        apiItem.innerHTML = `
+            <p>API: ${api.api} - Method: ${api.Method} - Count: ${api.count}</p>
+        `;
+        apiList.appendChild(apiItem);
     });
 }
 
