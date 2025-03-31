@@ -128,6 +128,20 @@ router.put("/resetPassword", async (req, res) => {
         // Save the updated user
         await user.save();
 
+        const count = await APICount.findOne({ api: "/api/reset/resetPassword" });
+        if (!count) {
+            const newEntry = new APICount({
+                api: "/api/reset/resetPassword",
+                count: 1,
+                method: "PUT"
+            });
+            await newEntry.save();
+
+        } else {
+            count.count = count.count + 1;
+            await newEntry.save();
+        }
+
         return res.status(200).json({ message: "Password reset successful!" });
     } catch (error) {
         console.error("Error during password reset:", error);

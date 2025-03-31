@@ -47,7 +47,7 @@ app.use('/api/doc', swaggerUi.serve, swaggerUi.setup(swaggerDocument, {
     swaggerOptions: {
         authAction: {
             authorize: false // This removes the "Authorize" button
-            
+
         }
     }
 }));
@@ -123,6 +123,21 @@ app.post("/api/signup", async (req, res) => {
         });
 
         await newUser.save();
+
+        const count = await APICount.findOne({ api: "/api/signup" });
+        if (!count) {
+            const newEntry = new APICount({
+                api: "/api/signup",
+                count: 1,
+                method: "POST"
+            });
+            await newEntry.save();
+
+        } else {
+            count.count = count.count + 1;
+            await newEntry.save();
+        }
+
         // console.log("User signed up successfully:", newUser); // we don't console log
         const token = jwt.sign(
             { email: newUser.email, isAdmin: newUser.isAdmin },
@@ -132,10 +147,10 @@ app.post("/api/signup", async (req, res) => {
         // Set JWT as an HTTP-only cookie
         res.cookie("token", token, {
             httpOnly: true,
-            secure: true, 
+            secure: true,
             maxAge: 60 * 60 * 1000,
             sameSite: "None",
-        });        
+        });
 
 
         res.status(201).json({ message: MESSAGES.warning_login_success });
@@ -158,7 +173,7 @@ app.post("/api/login", async (req, res) => {
 
         // Compare hashed password from the client with the hashed password in the database
         const hashedPasswordFromDB = user.password;
-        const hashedPasswordFromClient = password; 
+        const hashedPasswordFromClient = password;
 
         if (hashedPasswordFromClient !== hashedPasswordFromDB) {
             return res.status(401).json({ message: MESSAGES.warning_401 + " " + MESSAGES.warning_invalid_credentials });
@@ -174,16 +189,29 @@ app.post("/api/login", async (req, res) => {
         // set jwt as an http cookie
         res.cookie("token", token, {
             httpOnly: true,
-            secure: true, 
+            secure: true,
             maxAge: 60 * 60 * 1000,
             sameSite: "None",
-});
+        });
 
-        if(user.isAdmin === "true"){
-            res.status(200).json({ message: MESSAGES.warning_login_success, admin:"True" });
+        const count = await APICount.findOne({ api: "/api/login" });
+        if (!count) {
+            const newEntry = new APICount({
+                api: "/api/login",
+                count: 1,
+                method: "POST"
+            });
+            await newEntry.save();
 
-        } else{
-            res.status(200).json({ message: MESSAGES.warning_login_success, admin:"False" });
+        } else {
+            count.count = count.count + 1;
+            await newEntry.save();
+        }
+        if (user.isAdmin === "true") {
+            res.status(200).json({ message: MESSAGES.warning_login_success, admin: "True" });
+
+        } else {
+            res.status(200).json({ message: MESSAGES.warning_login_success, admin: "False" });
         }
     } catch (error) {
         // console.error("Login error:", error); // we don't console log
@@ -191,7 +219,7 @@ app.post("/api/login", async (req, res) => {
     }
 });
 
-app.get("/api/user", (req, res) => {
+app.get("/api/user", async (req, res) => {
     const token = req.cookies.token;
     console.log("test1")
     if (!token) {
@@ -208,6 +236,21 @@ app.get("/api/user", (req, res) => {
                 isAdmin: decoded.isAdmin
             }
         });
+
+        const count = await APICount.findOne({ api: "/api/user" });
+        if (!count) {
+            const newEntry = new APICount({
+                api: "/api/user",
+                count: 1,
+                method: "GET"
+            });
+            await newEntry.save();
+
+        } else {
+            count.count = count.count + 1;
+            await newEntry.save();
+        }
+
     } catch (err) {
         res.json({ success: false, message: MESSAGES.warning_invalid_token });
     }
@@ -217,6 +260,19 @@ app.get("/api/user", (req, res) => {
 app.get("/api/admin/users", isAdminMiddleware, async (req, res) => {
     try {
         const users = await User.find({}, "email isAdmin"); // Fetch only necessary fields
+        const count = await APICount.findOne({ api: "/api/admin/users" });
+        if (!count) {
+            const newEntry = new APICount({
+                api: "/api/admin/users",
+                count: 1,
+                method: "GET"
+            });
+            await newEntry.save();
+
+        } else {
+            count.count = count.count + 1;
+            await newEntry.save();
+        }
         res.json({ success: true, users });
     } catch (error) {
         res.status(500).json({ success: false, message: MESSAGES.warning_error_fetching_users });
@@ -227,6 +283,19 @@ app.get("/api/admin/users", isAdminMiddleware, async (req, res) => {
 app.delete("/api/admin/delete/:id", isAdminMiddleware, async (req, res) => {
     try {
         await User.findByIdAndDelete(req.params.id);
+        const count = await APICount.findOne({ api: "/api/admin/delete/:id" });
+        if (!count) {
+            const newEntry = new APICount({
+                api: "/api/admin/delete/:id",
+                count: 1,
+                method: "DELETE"
+            });
+            await newEntry.save();
+
+        } else {
+            count.count = count.count + 1;
+            await newEntry.save();
+        }
         res.json({ success: true, message: MESSAGES.warning_user_deleted });
     } catch (error) {
         res.status(500).json({ success: false, message: warning_500 + " " + MESSAGES.warning_user_not_deleted });

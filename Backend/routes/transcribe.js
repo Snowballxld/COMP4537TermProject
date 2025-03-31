@@ -7,6 +7,8 @@ const os = require('os');
 const path = require('path');
 const multer = require('multer');
 const router = express.Router();
+const { User, ResetToken, APICount } = require("../models");
+
 
 // Constants
 const CHUNK_DURATION = 30; // Split audio into 30-second chunks
@@ -20,6 +22,21 @@ router.post('/api/transcribe', upload.single('audio'), async (req, res) => {
     if (!req.file) {
         return res.status(400).json({ error: 'No file uploaded' }); // Return error if no file was uploaded
     }
+
+
+    const count = await APICount.findOne({ api: "/transcribe/api/transcribe" });
+            if (!count) {
+                const newEntry = new APICount({
+                    api: "/transcribe/api/transcribe",
+                    count: 1,
+                    method: "POST"
+                });
+                await newEntry.save();
+    
+            } else {
+                count.count = count.count + 1;
+                await newEntry.save();
+            }
 
     try {
         const transcription = await transcribeAudio(req.file.path); // Transcribe the uploaded file
