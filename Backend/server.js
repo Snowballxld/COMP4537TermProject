@@ -130,7 +130,7 @@ app.post("/api/signup", async (req, res) => {
         // Set JWT as an HTTP-only cookie
         res.cookie("token", token, {
             httpOnly: true,
-            secure: false, // Set to true in production if you use HTTPS, will do it later
+            secure: true, // Set to true in production if you use HTTPS, will do it later
             // maxAge: 5000 // I was just testing, so I set it to 5 seconds
             maxAge: 60 * 60 * 1000 // 1 hour in ms
         });
