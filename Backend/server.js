@@ -134,7 +134,7 @@ app.post("/api/signup", async (req, res) => {
             httpOnly: true,
             secure: true, 
             maxAge: 60 * 60 * 1000,
-            sameSite: "None"
+            sameSite: "None",
         });        
 
 
@@ -177,9 +177,7 @@ app.post("/api/login", async (req, res) => {
             secure: true, 
             maxAge: 60 * 60 * 1000,
             sameSite: "None",
-            domain: "comp4537termproject-1.onrender.com"
 });
-
 
         if(user.isAdmin === "true"){
             res.status(200).json({ message: MESSAGES.warning_login_success, admin:"True" });
