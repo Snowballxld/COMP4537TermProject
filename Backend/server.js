@@ -22,11 +22,12 @@ app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 // I moved this up
 app.use(cors({
-    origin: "https://4537projectfrontend.netlify.app", // Allow all origins (for development)
-    methods: "GET,POST,PUT, DELETE,OPTIONS",
-    allowedHeaders: "Content-Type, Authorization",
-    credentials: true
+    origin: "https://4537projectfrontend.netlify.app",
+    credentials: true, // Ensure cookies are sent
+    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    allowedHeaders: ["Content-Type", "Authorization"]
 }));
+
 // I just added this
 app.options("*", cors()); // Allows preflight requests for all routes
 
@@ -131,10 +132,10 @@ app.post("/api/signup", async (req, res) => {
         // Set JWT as an HTTP-only cookie
         res.cookie("token", token, {
             httpOnly: true,
-            secure: true, // Set to true in production if you use HTTPS, will do it later
-            // maxAge: 5000 // I was just testing, so I set it to 5 seconds
-            maxAge: 60 * 60 * 1000 // 1 hour in ms
-        });
+            secure: true, 
+            maxAge: 60 * 60 * 1000,
+            sameSite: "None"
+        });        
 
 
         res.status(201).json({ message: MESSAGES.warning_login_success });
@@ -173,11 +174,11 @@ app.post("/api/login", async (req, res) => {
         // set jwt as an http cookie
         res.cookie("token", token, {
             httpOnly: true,
-            secure: true, // Change to true when serving over HTTPS in production
-            sameSite: "None", // check this to see if fixes problem
-            maxAge: 60 * 60 * 1000
-            // maxAge: 5000 // I was just testing, so I set it to 5 seconds
+            secure: true, 
+            maxAge: 60 * 60 * 1000,
+            sameSite: "None"
         });
+        
 
         if(user.isAdmin === "true"){
             res.status(200).json({ message: MESSAGES.warning_login_success, admin:"True" });
