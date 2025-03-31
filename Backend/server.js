@@ -24,7 +24,7 @@ app.use(express.json());
 app.use(cors({
     origin: "https://4537projectfrontend.netlify.app",
     credentials: true, // Ensure cookies are sent
-    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    methods: "GET,POST,PUT,DELETE,OPTIONS",
     allowedHeaders: ["Content-Type", "Authorization"]
 }));
 
@@ -173,12 +173,12 @@ app.post("/api/login", async (req, res) => {
         );
         // set jwt as an http cookie
         res.cookie("token", token, {
-            httpOnly: true,
-            secure: true, 
-            maxAge: 60 * 60 * 1000,
-            sameSite: "None"
-        });
-        
+    httpOnly: true,
+    secure: true, 
+    maxAge: 60 * 60 * 1000,
+    sameSite: "None"
+});
+
 
         if(user.isAdmin === "true"){
             res.status(200).json({ message: MESSAGES.warning_login_success, admin:"True" });
