@@ -172,7 +172,7 @@ app.post("/api/login", async (req, res) => {
         // set jwt as an http cookie
         res.cookie("token", token, {
             httpOnly: true,
-            secure: false, // Change to true when serving over HTTPS in production
+            secure: true, // Change to true when serving over HTTPS in production
             maxAge: 60 * 60 * 1000
             // maxAge: 5000 // I was just testing, so I set it to 5 seconds
         });
@@ -191,10 +191,12 @@ app.post("/api/login", async (req, res) => {
 
 app.get("/api/user", (req, res) => {
     const token = req.cookies.token;
+    console.log("test1")
     if (!token) {
+        console.log("test3")
         return res.json({ success: false, message: MESSAGES.warning_no_user_logged_in });
     }
-
+    console.log("test2")
     try {
         const decoded = jwt.verify(token, JWT_SECRET);
         res.json({
