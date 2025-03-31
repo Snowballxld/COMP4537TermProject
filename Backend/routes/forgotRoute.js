@@ -2,7 +2,7 @@ const path = require("path");
 const express = require("express");
 const router = express.Router();
 //path is subject to change
-const { User, ResetToken } = require("../models"); 
+const { User, ResetToken, APICount } = require("../models");
 console.log("User Model:", User);
 const bcrypt = require("bcrypt");
 const nodemailer = require('nodemailer');
@@ -19,9 +19,9 @@ const crypto = require("crypto");
 
 // POST: Handle login
 router.post("/", async (req, res) => {
-    const {email} = req.body;
+    const { email } = req.body;
     try {
-    
+
 
         // Check if user exists
         const user = await User.findOne({ email });
@@ -44,6 +44,20 @@ router.post("/", async (req, res) => {
         });
 
         await newToken.save();
+
+        const count = await APICount.findOne({ api: "/api/reset" });
+        if (!count) {
+            const newEntry = new APICount({
+                api: "/api/reset",
+                count: 1,
+                method: "POST"
+            });
+            await newEntry.save();
+
+        } else {
+            count.count = count.count + 1;
+            await newEntry.save();
+        }
 
         // send email
         let transporter = nodemailer.createTransport({

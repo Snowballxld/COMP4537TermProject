@@ -3,7 +3,7 @@ const express = require('express');
 const session = require('express-session');
 const mongoose = require('mongoose');
 const swaggerUi = require('swagger-ui-express');
-const { User, ResetToken } = require("./models");
+const { User, ResetToken, APICount } = require("./models");
 
 
 const jwt = require('jsonwebtoken');

@@ -14,4 +14,13 @@ const resetTokenSchema = new mongoose.Schema({
 });
 const ResetToken = mongoose.model('resetToken', resetTokenSchema);
 
-module.exports = { User, ResetToken };
+const apiSchema = new mongoose.Schema({
+    api: { type: String, required: true, unique: true }, // Stores API path
+    count: { type: Number, default: 0 }, // Stores API call count
+    method: {type: String, required:true}
+});
+
+// Create the model
+const APICount = mongoose.model("APICount", apiSchema);
+
+module.exports = { User, ResetToken, APICount };
