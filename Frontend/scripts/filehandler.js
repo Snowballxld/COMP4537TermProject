@@ -11,8 +11,27 @@ const audioFileInput = document.getElementById('audioFile');
 const transcriptionOutput = document.getElementById('transcription');
 
 // Initialize event listeners
-recordButton.addEventListener('click', toggleRecording);
-uploadButton.addEventListener('click', uploadAudio);
+// recordButton.addEventListener('click', toggleRecording);
+recordButton.addEventListener('click', (event) => {
+    event.preventDefault(); // Stop page refresh
+    toggleRecording().catch(error => console.error('Unhandled error:', error));
+});
+
+uploadButton.addEventListener('click', (event) => {
+    event.preventDefault(); // Stop page refresh
+    uploadAudio().catch(error => console.error('Unhandled error:', error));
+});
+
+
+document.addEventListener("beforeunload", (event) => {
+    console.log("Something is triggering a page unload!");
+    event.preventDefault();
+});
+
+document.addEventListener("submit", (event) => {
+    event.preventDefault();
+    console.log("A form tried to submit, but we blocked it!");
+});
 
 // Toggle recording function
 async function toggleRecording() {
@@ -171,6 +190,7 @@ async function convertToWav(audioBlob) {
 
 // Upload audio file (unchanged from previous version)
 async function uploadAudio() {
+
     const file = audioFileInput.files[0];
     if (!file) {
         alert('Please select an audio file first');
@@ -193,28 +213,34 @@ async function uploadAudio() {
 }
 
 // Send audio to server (unchanged from previous version)
-async function sendAudioToServer(audioBlob, filename) {
+async function sendAudioToServer(file, filename) {
     const formData = new FormData();
-    formData.append('audio', audioBlob, filename);
+    formData.append('audio', file);
+
+    console.log("Starting fetch request...");
 
     try {
-        const response = await fetch(`${site}/transcribe/api/transcribe`, {
+        const response = await fetch('http://localhost:3000/transcribe/api/transcribe', {
             method: 'POST',
-            body: formData
+            body: formData,
+            keepalive: true
         });
 
+        console.log("Fetch response received:", response);
+
         if (!response.ok) {
-            throw new Error(`Server error: ${response.status}`);
+            throw new Error(`HTTP error! Status: ${response.status}`);
         }
 
-        const data = await response.json();
-        transcriptionOutput.textContent = data.text || 'No transcription returned';
+        const result = await response.json();
+        console.log("Transcription result:", result);
+        transcriptionOutput.textContent = result.text;
     } catch (error) {
-        console.error('Server error:', error);
-        transcriptionOutput.textContent = 'Error: Failed to communicate with server';
-        throw error;
+        console.error("Fetch error:", error);
+        transcriptionOutput.textContent = "Error: Failed to transcribe audio";
     }
 }
+
 
 // Helper functions for WAV conversion
 function convertToMono(audioBuffer) {

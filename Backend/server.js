@@ -2,6 +2,7 @@ const MESSAGES = require('./lang/en/en.js');
 const express = require('express');
 const session = require('express-session');
 const mongoose = require('mongoose');
+const swaggerUi = require('swagger-ui-express');
 const { User, ResetToken } = require("./models");
 
 
@@ -13,7 +14,9 @@ const app = express();
 const cors = require('cors');
 require('dotenv').config();
 const path = require('path');
+const fs = require('fs');
 
+const swaggerDocument = JSON.parse(fs.readFileSync(path.join(__dirname, 'swagger.json'), 'utf8'));
 
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
@@ -29,6 +32,15 @@ app.use('/transcribe', transcribeRoutes);
 // app.use('/api/login', loginRoutes);
 const forgotRoutes = require("./routes/forgotRoute");
 app.use('/api/reset', forgotRoutes);
+
+app.use('/api/doc', swaggerUi.serve, swaggerUi.setup(swaggerDocument, {
+    swaggerOptions: {
+        authAction: {
+            authorize: false // This removes the "Authorize" button
+            
+        }
+    }
+}));
 
 // Serve static files from the Frontend folder
 app.use(express.static(path.join(__dirname, '../Frontend')));
