@@ -5,10 +5,11 @@ document.addEventListener("DOMContentLoaded", async () => {
         // Check if the user is an admin
         const userResponse = await fetch(`${site}/api/user`, { credentials: "include" });
         const userData = await userResponse.json();
+        console.log("Full userData:", userData);
         console.log(userData.user.isAdmin)
         console.log(userData.success)
 
-        console.log("Full userData:", userData);
+        
 
         if (!userData || !userData.user || userData.user.isAdmin == "false" || userData.user.isAdmin == "undefined") {
             console.log('ohio asl wth')
