@@ -20,6 +20,15 @@ const swaggerDocument = JSON.parse(fs.readFileSync(path.join(__dirname, 'swagger
 
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
+// I moved this up
+app.use(cors({
+    origin: "https://4537projectfrontend.netlify.app", // Allow all origins (for development)
+    methods: "GET,POST,PUT, DELETE,OPTIONS",
+    allowedHeaders: "Content-Type, Authorization",
+    credentials: true
+}));
+// I just added this
+app.options("*", cors()); // Allows preflight requests for all routes
 
 const port = process.env.PORT || 3000;
 const mongoUri = process.env.MONGO_URI;
@@ -49,14 +58,6 @@ app.use(express.static(path.join(__dirname, '../Frontend')));
 app.get('/transcribe', (req, res) => {
     res.sendFile(path.join(__dirname, '../Frontend/views/transcribe.html'));
 });
-
-app.use(cors({
-    origin: "https://4537projectfrontend.netlify.app", // Allow all origins (for development)
-    methods: "GET,POST,PUT, DELETE,OPTIONS",
-    allowedHeaders: "Content-Type, Authorization",
-    credentials: true
-}));
-
 
 
 async function initMongoDB() {
