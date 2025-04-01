@@ -195,19 +195,19 @@ app.post("/api/login", async (req, res) => {
             sameSite: "None",
         });
 
-        // const count = await APICount.findOne({ api: "/api/login" });
-        // if (!count) {
-        //     const newEntry = new APICount({
-        //         api: "/api/login",
-        //         count: 1,
-        //         method: "POST"
-        //     });
-        //     await newEntry.save();
+        const count = await APICount.findOne({ api: "/api/login" });
+        if (!count) {
+            const newEntry = new APICount({
+                api: "/api/login",
+                count: 1,
+                method: "POST"
+            });
+            await newEntry.save();
 
-        // } else {
-        //     count.count = count.count + 1;
-        //     await count.save();
-        // }
+        } else {
+            count.count = count.count + 1;
+            await count.save();
+        }
         if (user.isAdmin === "true") {
             res.status(200).json({ message: MESSAGES.warning_login_success, admin: "True" });
 

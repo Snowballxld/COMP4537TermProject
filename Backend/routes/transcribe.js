@@ -8,6 +8,8 @@ const path = require('path');
 const multer = require('multer');
 const router = express.Router();
 const { User, ResetToken, APICount } = require("../models");
+const cors = require('cors');
+
 
 
 router.use(cors({
