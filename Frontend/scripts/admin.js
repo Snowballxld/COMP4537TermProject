@@ -50,7 +50,7 @@ function displayUsers(users, apis) {
     apis.forEach(api => {
         const apiItem = document.createElement("div");
         apiItem.innerHTML = `
-            <p>API: ${api.api} - Method: ${api.Method} - Count: ${api.count}</p>
+            <p>API: ${api.api} - Method: ${api.method} - Count: ${api.count}</p>
         `;
         apiList.appendChild(apiItem);
     });
