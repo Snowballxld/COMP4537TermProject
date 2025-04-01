@@ -38,18 +38,31 @@ router.post('/api/transcribe', upload.single('audio'), async (req, res) => {
         await count.save();
     }
 
-    const user = await User.findOne({ api: "/transcribe/api/transcribe" });
-    if (!user) {
-        return res.status(400).json({ error: 'Not logged in' }); // Return error if not logged in 
+    async () => {
+        try {
+            const response = await fetch(`${site}/api/user`, {
+                method: "GET",
+                credentials: "include"
+            });
 
-    } else {
-        if (user.apiUsage){
-            user.apiUsage = user.apiUsage + 1;
-        } else{
-            user.apiUsage = 1;
+            if (!response.ok) {
+                console.warn("Not authenticated, redirecting to login...");
+                window.location.href = "/views/login.html";
+            }
+
+            const user = await User.findOne({ email: `${response.user.email}` });
+            if (user.apiUsage) {
+                user.apiUsage = user.apiUsage + 1;
+            } else {
+                user.apiUsage = 1;
+            }
+            await user.save();
+
+        } catch (error) {
+            console.error("Error checking authentication:", error);
+            window.location.href = "/views/login.html";
         }
-        await user.save();
-    }
+    };
 
     try {
         const transcription = await transcribeAudio(req.file.path); // Transcribe the uploaded file
