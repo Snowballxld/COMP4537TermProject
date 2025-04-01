@@ -10,6 +10,13 @@ const router = express.Router();
 const { User, ResetToken, APICount } = require("../models");
 
 
+router.use(cors({
+    origin: "https://4537projectfrontend.netlify.app",
+    credentials: true, // Ensure cookies are sent
+    methods: "GET,POST,PUT,DELETE,OPTIONS",
+    allowedHeaders: ["Content-Type", "Authorization"]
+}));
+
 // Constants
 const CHUNK_DURATION = 30; // Split audio into 30-second chunks
 const MODEL_PATH = path.join(process.cwd(), '/models/whisper-small'); // Ensure correct model path
