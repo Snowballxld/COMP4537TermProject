@@ -194,19 +194,19 @@ app.post("/api/login", async (req, res) => {
             sameSite: "None",
         });
 
-        const count = await APICount.findOne({ api: "/api/login" });
-        if (!count) {
-            const newEntry = new APICount({
-                api: "/api/login",
-                count: 1,
-                method: "POST"
-            });
-            await newEntry.save();
+        // const count = await APICount.findOne({ api: "/api/login" });
+        // if (!count) {
+        //     const newEntry = new APICount({
+        //         api: "/api/login",
+        //         count: 1,
+        //         method: "POST"
+        //     });
+        //     await newEntry.save();
 
-        } else {
-            count.count = count.count + 1;
-            await newEntry.save();
-        }
+        // } else {
+        //     count.count = count.count + 1;
+        //     await newEntry.save();
+        // }
         if (user.isAdmin === "true") {
             res.status(200).json({ message: MESSAGES.warning_login_success, admin: "True" });
 
@@ -214,7 +214,7 @@ app.post("/api/login", async (req, res) => {
             res.status(200).json({ message: MESSAGES.warning_login_success, admin: "False" });
         }
     } catch (error) {
-        console.error("Login error:", error); // we don't console log
+        // console.error("Login error:", error); // we don't console log
         res.status(500).json({ message: MESSAGES.warning_generic });
     }
 });
