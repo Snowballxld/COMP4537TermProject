@@ -260,7 +260,7 @@ app.get("/api/user", async (req, res) => {
 // Get list of all users (Admin only)
 app.get("/api/admin/users", isAdminMiddleware, async (req, res) => {
     try {
-        const users = await User.find({}, "email isAdmin"); // Fetch only necessary fields
+        const users = await User.find({}, "email apiUsage"); // Fetch only necessary fields
         const count = await APICount.findOne({ api: "/api/admin/users" });
         if (!count) {
             const newEntry = new APICount({

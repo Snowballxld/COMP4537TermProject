@@ -19,6 +19,7 @@ recordButton.addEventListener('click', (event) => {
 
 uploadButton.addEventListener('click', (event) => {
     event.preventDefault(); // Stop page refresh
+    console.log("pressed")
     uploadAudio().catch(error => console.error('Unhandled error:', error));
 });
 

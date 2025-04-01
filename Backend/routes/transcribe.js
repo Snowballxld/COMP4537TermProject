@@ -25,18 +25,31 @@ router.post('/api/transcribe', upload.single('audio'), async (req, res) => {
 
 
     const count = await APICount.findOne({ api: "/transcribe/api/transcribe" });
-            if (!count) {
-                const newEntry = new APICount({
-                    api: "/transcribe/api/transcribe",
-                    count: 1,
-                    method: "POST"
-                });
-                await newEntry.save();
-    
-            } else {
-                count.count = count.count + 1;
-                await count.save();
-            }
+    if (!count) {
+        const newEntry = new APICount({
+            api: "/transcribe/api/transcribe",
+            count: 1,
+            method: "POST"
+        });
+        await newEntry.save();
+
+    } else {
+        count.count = count.count + 1;
+        await count.save();
+    }
+
+    const user = await User.findOne({ api: "/transcribe/api/transcribe" });
+    if (!user) {
+        return res.status(400).json({ error: 'Not logged in' }); // Return error if not logged in 
+
+    } else {
+        if (user.apiUsage){
+            user.apiUsage = user.apiUsage + 1;
+        } else{
+            user.apiUsage = 1;
+        }
+        await user.save();
+    }
 
     try {
         const transcription = await transcribeAudio(req.file.path); // Transcribe the uploaded file

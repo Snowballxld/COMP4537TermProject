@@ -40,7 +40,7 @@ function displayUsers(users, apis) {
     users.forEach(user => {
         const userItem = document.createElement("div");
         userItem.innerHTML = `
-            <p>Email: ${user.email} - Admin: ${user.isAdmin}</p>
+            <p>Email: ${user.email} - API calls: ${user.apiUsage}</p>
             <button onclick="deleteUser('${user._id}')">Delete</button>
         `;
         usersList.appendChild(userItem);
