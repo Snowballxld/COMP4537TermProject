@@ -56,7 +56,7 @@ router.post("/", async (req, res) => {
 
         } else {
             count.count = count.count + 1;
-            await newEntry.save();
+            await count.save();
         }
 
         // send email
@@ -139,7 +139,7 @@ router.put("/resetPassword", async (req, res) => {
 
         } else {
             count.count = count.count + 1;
-            await newEntry.save();
+            await count.save();
         }
 
         return res.status(200).json({ message: "Password reset successful!" });

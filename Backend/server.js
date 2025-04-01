@@ -28,7 +28,7 @@ app.use(express.json());
 //     allowedHeaders: ["Content-Type", "Authorization"]
 // }));
 app.use((req, res, next) => {
-    res.header("Access-Control-Allow-Origin", "https://4537projectfrontend.netlify.app");
+    res.header("Access-Control-Allow-Origin", "http://127.0.0.1:5500");
     res.header("Access-Control-Allow-Credentials", "true");
     res.header("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
     res.header("Access-Control-Allow-Headers", "Content-Type, Authorization");
@@ -143,7 +143,7 @@ app.post("/api/signup", async (req, res) => {
 
         } else {
             count.count = count.count + 1;
-            await newEntry.save();
+            await count.save();
         }
 
         // console.log("User signed up successfully:", newUser); // we don't console log
@@ -213,7 +213,7 @@ app.post("/api/login", async (req, res) => {
 
         // } else {
         //     count.count = count.count + 1;
-        //     await newEntry.save();
+        //     await count.save();
         // }
         if (user.isAdmin === "true") {
             res.status(200).json({ message: MESSAGES.warning_login_success, admin: "True" });
@@ -256,7 +256,7 @@ app.get("/api/user", async (req, res) => {
 
         } else {
             count.count = count.count + 1;
-            await newEntry.save();
+            await count.save();
         }
 
     } catch (err) {
@@ -279,7 +279,7 @@ app.get("/api/admin/users", isAdminMiddleware, async (req, res) => {
 
         } else {
             count.count = count.count + 1;
-            await newEntry.save();
+            await count.save();
         }
 
         const apis = await APICount.find({}, "api Method count"); // Fetch only necessary fields
@@ -304,7 +304,7 @@ app.delete("/api/admin/delete/:id", isAdminMiddleware, async (req, res) => {
 
         } else {
             count.count = count.count + 1;
-            await newEntry.save();
+            await count.save();
         }
         res.json({ success: true, message: MESSAGES.warning_user_deleted });
     } catch (error) {

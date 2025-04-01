@@ -35,7 +35,7 @@ router.post('/api/transcribe', upload.single('audio'), async (req, res) => {
     
             } else {
                 count.count = count.count + 1;
-                await newEntry.save();
+                await count.save();
             }
 
     try {
