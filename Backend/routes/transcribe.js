@@ -6,69 +6,31 @@ const os = require('os');
 const path = require('path');
 const multer = require('multer');
 const router = express.Router();
-const { User, APICount } = require("../models");
-
-// Set up multer for file upload
+const { User, ResetToken, APICount } = require("../models");
 const upload = multer({ dest: 'uploads/' });
 
-const { exec } = require('child_process');
-router.get('/test-ffmpeg', (req, res) => {
-    exec('ffmpeg -version', (err, stdout, stderr) => {
-        if (err) {
-            console.error('FFmpeg test failed:', err);
-            return res.status(500).send('FFmpeg not installed');
-        }
-        // Corrected the response syntax
-        res.send(`<pre>FFmpeg installed:\n${stdout}</pre>`);
-    });
-});
+// const { exec } = require('child_process');
+// router.get('/test-ffmpeg', (req, res) => {
+//     exec('ffmpeg -version', (err, stdout, stderr) => {
+//         if (err) {
+//             console.error('FFmpeg test failed:', err);
+//             return res.status(500).send('FFmpeg not installed');
+//         }
+//         // Corrected the response syntax
+//         res.send(`<pre>FFmpeg installed:\n${stdout}</pre>`);
+//     });
+// });
 
 // Route to handle audio file upload and transcription
 router.post('/api/transcribe', upload.single('audio'), async (req, res) => {
 
-    const count = await APICount.findOne({ api: "/transcribe/api/transcribe" });
-    if (!count) {
-        const newEntry = new APICount({
-            api: "/transcribe/api/transcribe",
-            count: 1,
-            method: "POST"
-        });
-        await newEntry.save();
-
-    } else {
-        count.count = count.count + 1;
-        await count.save();
-    }
-
-    async () => {
-        try {
-            const response = await fetch(`${site}/api/user`, {
-                method: "GET",
-                credentials: "include"
-            });
-
-            if (!response.ok) {
-                console.warn("Not authenticated, redirecting to login...");
-                window.location.href = "/views/login.html";
-            }
-
-            const user = await User.findOne({ email: `${response.user.email}` });
-            if (user.apiUsage) {
-                user.apiUsage = user.apiUsage + 1;
-            } else {
-                user.apiUsage = 1;
-            }
-            await user.save();
-
-        } catch (error) {
-            console.error("Error checking authentication:", error);
-            window.location.href = "/views/login.html";
-        }
-    };
+    console.log("Screw this")
 
     if (!req.file) {
         return res.status(400).json({ error: 'No file uploaded' }); // Return error if no file was uploaded
     }
+
+    const count = await APICount.findOne({ api: "/transcribe/api/transcribe" });
 
     try {
         const transcription = await transcribeAudio(req.file.path); // Transcribe the uploaded file
@@ -89,13 +51,21 @@ async function loadModel() {
         const transformers = await import('@xenova/transformers');
         pipeline = transformers.pipeline;
 
+        console.log('Loading Whisper model from local path...');
+
         // Set the environment variable to use local cache
         process.env.HF_HOME = path.join(process.cwd(), 'models');
 
-        transcriber = await pipeline('automatic-speech-recognition', 'whisper-base', {
-            cache_dir: process.env.HF_HOME // Ensure model is loaded from local storage
+        transcriber = await pipeline('automatic-speech-recognition', 'whisper-tiny', {
+            cache_dir: process.env.HF_HOME,
+            local_files_only: true,
+            quantized: true,  // Use quantized model if available
+            device: 'cpu',    // Force CPU if GPU memory is constrained
+            chunk_length_s: 10,  // Process in smaller chunks
+            stride_length_s: [5, 5]  // Overlap chunks slightly
         });
 
+        console.log('Local model loaded successfully');
     }
     return transcriber;
 }
