@@ -25,12 +25,12 @@ app.use(cors({
     origin: "https://4537projectfrontend.netlify.app",
     credentials: true, // Ensure cookies are sent
     methods: "GET,POST,PUT,DELETE,OPTIONS",
-    allowedHeaders: ["Content-Type", "Authorization"]
+    allowedHeaders: ["Content-Type", "Authorization", "Accept"]
 }));
 
 
 // I just added this
-app.options("*", cors()); // Allows preflight requests for all routes
+app.options("https://4537projectfrontend.netlify.app", cors()); // Allows preflight requests for all routes
 
 const port = process.env.PORT || 3000;
 const mongoUri = process.env.MONGO_URI;

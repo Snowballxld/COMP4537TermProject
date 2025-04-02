@@ -1,5 +1,4 @@
 const express = require('express');
-// const { pipeline } = require('@xenova/transformers');
 const ffmpeg = require('fluent-ffmpeg');
 const fs = require('fs');
 const wavDecoder = require('wav-decoder');
@@ -7,10 +6,7 @@ const os = require('os');
 const path = require('path');
 const multer = require('multer');
 const router = express.Router();
-const { User, ResetToken, APICount } = require("../models");
-const { quantize } = require('bitsandbytes');
-
-const MODEL_PATH = path.join(process.cwd(), '/models/whisper-small'); // Ensure correct model path
+const { User, APICount } = require("../models");
 
 // Set up multer for file upload
 const upload = multer({ dest: 'uploads/' });
