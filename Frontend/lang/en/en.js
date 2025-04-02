@@ -20,4 +20,3 @@ const MESSAGES = {
     warning_user_deleted: "User deleted successfully",
     warning_user_not_deleted: "Error deleting User",
 }
-module.exports = MESSAGES;
