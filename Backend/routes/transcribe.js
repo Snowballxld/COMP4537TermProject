@@ -26,7 +26,6 @@ router.get('/test-ffmpeg', (req, res) => {
 // Route to handle audio file upload and transcription
 router.post('/api/transcribe', upload.single('audio'), async (req, res) => {
 
-
     const count = await APICount.findOne({ api: "/transcribe/api/transcribe" });
     if (!count) {
         const newEntry = new APICount({
@@ -66,7 +65,6 @@ router.post('/api/transcribe', upload.single('audio'), async (req, res) => {
             window.location.href = "/views/login.html";
         }
     };
-
 
     if (!req.file) {
         return res.status(400).json({ error: 'No file uploaded' }); // Return error if no file was uploaded

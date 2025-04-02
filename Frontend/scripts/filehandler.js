@@ -141,7 +141,7 @@ async function prepareAndSendAudio(file) {
     // To Check If FFMPEG Is Downloaded On Server Side
     // try {
     //     console.log("Testing FFmpeg installation...");
-    //     const ffmpegTest = await fetch(`/transcribe/test-ffmpeg`, {
+    //     const ffmpegTest = await fetch(`${site}/transcribe/test-ffmpeg`, {
     //         method: 'GET',
     //         credentials: 'include',
     //         headers: { 'Accept': 'application/json' }
@@ -163,7 +163,7 @@ async function prepareAndSendAudio(file) {
     console.log("Starting fetch request...");
 
     try {
-        const response = await fetch(`/transcribe/api/transcribe`, {
+        const response = await fetch(`${site}/transcribe/api/transcribe`, {
             method: 'POST',
             body: formData,
             keepalive: true,
