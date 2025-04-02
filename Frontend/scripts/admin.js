@@ -32,29 +32,62 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
 });
 
-// Function to display users in the UI
 function displayUsers(users, apis) {
-    const usersList = document.getElementById("usersList"); // Assume there's a div with this ID
-    usersList.innerHTML = ""; // Clear existing content
+    // Set up Users Table
+    const usersList = document.getElementById("usersList");
+    usersList.innerHTML = "";  // Clear current content
 
+    let usersTableHTML = `
+        <table>
+            <tr>
+                <th>Email</th>
+                <th>API Calls</th>
+                <th>Actions</th>
+            </tr>
+    `;
+
+    // Add each user as a row in the table
     users.forEach(user => {
-        const userItem = document.createElement("div");
-        userItem.innerHTML = `
-            <p>Email: ${user.email} - API calls: ${user.apiUsage}</p>
-            <button onclick="deleteUser('${user._id}')">Delete</button>
+        usersTableHTML += `
+            <tr>
+                <td>${user.email}</td>
+                <td>${user.apiUsage}</td>
+                <td><button onclick="deleteUser('${user._id}')">Delete</button></td>
+            </tr>
         `;
-        usersList.appendChild(userItem);
     });
 
-    const apiList = document.getElementById("apiList"); // Assume there's a div with this ID
+    usersTableHTML += `</table>`;
+    usersList.innerHTML = usersTableHTML; // Insert the table HTML into the page
+
+    // Set up APIs Table
+    const apiList = document.getElementById("apiList");
+    apiList.innerHTML = "";  // Clear current content
+
+    let apiTableHTML = `
+        <table>
+            <tr>
+                <th>API</th>
+                <th>Method</th>
+                <th>Count</th>
+            </tr>
+    `;
+
+    // Add each API as a row in the table
     apis.forEach(api => {
-        const apiItem = document.createElement("div");
-        apiItem.innerHTML = `
-            <p>API: ${api.api} - Method: ${api.method} - Count: ${api.count}</p>
+        apiTableHTML += `
+            <tr>
+                <td>${api.api}</td>
+                <td>${api.method}</td>
+                <td>${api.count}</td>
+            </tr>
         `;
-        apiList.appendChild(apiItem);
     });
+
+    apiTableHTML += `</table>`;
+    apiList.innerHTML = apiTableHTML; // Insert the table HTML into the page
 }
+
 
 // Function to delete a user
 async function deleteUser(userId) {

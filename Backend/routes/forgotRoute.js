@@ -37,6 +37,15 @@ router.post("/", async (req, res) => {
 
         const resetPasswordToken = tokenHash;
         const resetPasswordExpires = Date.now() + 30 * 60 * 1000; // 15 minutes
+
+        const existingToken = await ResetToken.findOne({ email });
+        if (existingToken) {
+            if(existingToken.expiry < Date.now()){ //expired
+                exisitingToken.deleteOne()
+            } else{
+                return res.status(401).json({ message: "Token already exists" });
+            }
+        }
         const newToken = new ResetToken({
             email,
             token: resetPasswordToken,
