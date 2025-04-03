@@ -246,3 +246,18 @@ function cleanupRecording() {
     isRecording = false;
     console.log("Cleanup complete");
 }
+
+document.addEventListener("DOMContentLoaded", async () => {
+    try {
+        // Check if the user is an admin
+        const userResponse = await fetch(`${site}/api/user`, { credentials: "include" });
+        const userData = await userResponse.json();
+        console.log("Full userData:", userData);
+        console.log(userData.user.isAdmin)
+        console.log(userData.success)
+    } catch (error) {
+        console.error("Error:", error);
+    }
+});
+
+
