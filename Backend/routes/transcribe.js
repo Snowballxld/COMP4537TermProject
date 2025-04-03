@@ -52,7 +52,7 @@ router.post('/api/transcribe', upload.single('audio'), async (req, res) => {
         res.json({ text: transcription, warning: warningMessage });
     } catch (error) {
         console.error('Error during transcription:', error);
-        res.status(500).json({ error: 'Error during transcription' }); // Handle errors
+        res.status(500).json({ "error": error }); // Handle errors
     }
 
 });
