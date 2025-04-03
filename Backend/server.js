@@ -344,11 +344,11 @@ app.post('/transcribe/api/transcribe', upload.single('audio'), async (req, res) 
         user.apiUsage = (user.apiUsage || 0) + 1;
         await user.save();
 
-        // const updatedCount = await APICount.findOneAndUpdate(
-        //     { api: "/transcribe/api/transcribe" },
-        //     { $inc: { count: 1 } },
-        //     { upsert: true, new: true, returnDocument: "after" }
-        // );
+        const updatedCount = await APICount.findOneAndUpdate(
+            { api: "/transcribe/api/transcribe" },
+            { $inc: { count: 1 } },
+            { upsert: true, new: true, returnDocument: "after" }
+        );
 
         let warningMessage = null;
         console.log(updatedCount.count)
