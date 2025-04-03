@@ -1,5 +1,6 @@
 // Recording variables
 const site = "https://comp4537termproject-1.onrender.com";
+// const site = ""
 let mediaRecorder;
 let audioStream;
 let audioChunks = [];
@@ -137,28 +138,6 @@ async function uploadAudio() {
 async function prepareAndSendAudio(file) {
     const formData = new FormData();
     formData.append('audio', file);
-
-    // To Check If FFMPEG Is Downloaded On Server Side
-    // try {
-    //     console.log("Testing FFmpeg installation...");
-    //     const ffmpegTest = await fetch(`${site}/transcribe/test-ffmpeg`, {
-    //         method: 'GET',
-    //         credentials: 'include',
-    //         headers: { 'Accept': 'application/json' }
-    //     });
-
-    //     if (!ffmpegTest.ok) {
-    //         throw new Error("FFmpeg test failed");
-    //     }
-
-    //     const ffmpegResult = await ffmpegTest.text();
-    //     console.log("FFmpeg test successful:", ffmpegResult);
-
-    // } catch (error) {
-    //     console.error("FFmpeg test failed:", error);
-    //     transcriptionOutput.textContent = "Error: Server processing unavailable (FFmpeg error)";
-    //     return;
-    // }
 
     console.log("Starting fetch request...");
 
