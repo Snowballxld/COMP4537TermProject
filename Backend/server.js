@@ -208,7 +208,7 @@ app.post("/api/login", async (req, res) => {
             count.count = count.count + 1;
             await count.save();
         }
-        if (user.isAdmin) { // quick check if isadmin is screwing it
+        if (user.isAdmin === "true") {
             res.status(200).json({ message: MESSAGES.warning_login_success, admin: "True" });
 
         } else {
