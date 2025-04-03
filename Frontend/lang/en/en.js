@@ -1,5 +1,5 @@
 // ../lang/en/en.js
-export const MESSAGES = {
+const MESSAGES = {
     warning_400: "400 Bad Request, Invalid request",
     warning_401: "401 Unauthorized, please log in",
     warning_403: "403 Forbidden, you do not have permission to access this resource",
