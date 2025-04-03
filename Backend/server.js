@@ -19,6 +19,7 @@ const fs = require('fs');
 const ffmpeg = require('fluent-ffmpeg');
 const multer = require('multer');
 const upload = multer({ dest: 'uploads/' });
+const wavDecoder = require('wav-decoder');
 
 
 const swaggerDocument = JSON.parse(fs.readFileSync(path.join(__dirname, 'swagger.json'), 'utf8'));
