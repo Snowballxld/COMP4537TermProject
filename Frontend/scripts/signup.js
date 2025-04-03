@@ -1,9 +1,10 @@
-const site = "https://comp4537termproject-1.onrender.com"
+const site = "https://web-translator-j7nv7.ondigitalocean.app";
+
 function showWarning(message) {
     const errorDiv = document.getElementById("error-message");
     if (errorDiv) {
         errorDiv.innerText = message;
-    } 
+    }
 }
 async function SignUp(event) {
     event.preventDefault();
@@ -27,7 +28,7 @@ async function SignUp(event) {
             .map(b => b.toString(16).padStart(2, "0"))
             .join("");
     }
-    
+
     const hashedPassword = await hashPassword(password);
 
     const requestData = {
@@ -43,7 +44,7 @@ async function SignUp(event) {
                 "Content-Type": "application/json"
             },
             body: JSON.stringify(requestData),
-            credentials: "include" 
+            credentials: "include"
         });
 
         if (response.ok) {
