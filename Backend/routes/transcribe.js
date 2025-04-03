@@ -8,7 +8,8 @@ const router = express.Router();
 const { User, ResetToken, APICount } = require("../models");
 const upload = multer({ dest: 'uploads/' });
 const crypto = require('crypto');
-const JWT_SECRET = process.env.JWT_SECRET || crypto.randomBytes(64).toString('hex');
+// const JWT_SECRET = process.env.JWT_SECRET || crypto.randomBytes(64).toString('hex');
+const JWT_SECRET = require("../server")
 
 // Route to handle audio file upload and transcription
 router.post('/api/transcribe', upload.single('audio'), async (req, res) => {
@@ -18,33 +19,33 @@ router.post('/api/transcribe', upload.single('audio'), async (req, res) => {
     }
 
     try {
-        // const token = req.cookies.token;
-        // if (!token) {
-        //     return res.status(401).json({ error: "Unauthorized: No token provided" });
-        // }
+        const token = req.cookies.token;
+        if (!token) {
+            return res.status(401).json({ error: "Unauthorized: No token provided" });
+        }
 
-        // const decoded = jwt.verify(token, JWT_SECRET);
-        // const user = await User.findOne({ email: decoded.email });
-
-        // if (!user) {
-        //     return res.status(404).json({ error: "User not found" });
-        // }
+        const decoded = jwt.verify(token, JWT_SECRET);
+        const user = await User.findOne({ email: decoded.email });
+        console.log("user: ", user)
+        if (!user) {
+            return res.status(404).json({ error: "User not found" });
+        }
 
         // Increment user's API usage in the database
-        // user.apiUsage += 1;
-        // await user.save();
+        user.apiUsage = (user.apiUsage || 0) + 1;
+        await user.save();
 
-        const updatedCount = await APICount.findOneAndUpdate(
-            { api: "/transcribe/api/transcribe" },
-            { $inc: { count: 1 } },
-            { upsert: true, new: true, returnDocument: "after" }
-        );
+        // const updatedCount = await APICount.findOneAndUpdate(
+        //     { api: "/transcribe/api/transcribe" },
+        //     { $inc: { count: 1 } },
+        //     { upsert: true, new: true, returnDocument: "after" }
+        // );
 
-        let warningMessage = null;
-        console.log(updatedCount.count)
-        if (1 > 20) {
-            warningMessage = "Warning: You have exceeded 20 API requests.";
-        }
+        // let warningMessage = null;
+        // console.log(updatedCount.count)
+        // if (1 > 20) {
+        //     warningMessage = "Warning: You have exceeded 20 API requests.";
+        // }
 
         const transcription = await transcribeAudio(req.file.path); // Transcribe the uploaded file
         console.log(transcription)
@@ -52,7 +53,7 @@ router.post('/api/transcribe', upload.single('audio'), async (req, res) => {
         res.json({ text: transcription, warning: warningMessage });
     } catch (error) {
         console.error('Error during transcription:', error);
-        res.status(500).json({ error: 'Error during transcription' }); // Handle errors
+        res.status(500).json({ error: error.message }); // Handle errors
     }
 
 });

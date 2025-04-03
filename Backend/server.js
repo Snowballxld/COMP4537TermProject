@@ -36,6 +36,8 @@ const port = process.env.PORT || 3000;
 const mongoUri = process.env.MONGO_URI;
 const JWT_SECRET = process.env.JWT_SECRET || crypto.randomBytes(64).toString('hex');
 
+app.use(cookieParser());
+
 // Routing for API Call
 const transcribeRoutes = require('./routes/transcribe');
 app.use('/transcribe', transcribeRoutes);
@@ -75,7 +77,7 @@ async function initMongoDB() {
     }
 }
 
-app.use(cookieParser());
+
 
 //---------- Middlewares ---------------//
 
@@ -189,6 +191,7 @@ app.post("/api/login", async (req, res) => {
         );
         // set jwt as an http cookie
         res.cookie("token", token, {
+            httpOnly: true,
             secure: true,
             maxAge: 60 * 60 * 1000,
             sameSite: "None"
@@ -313,5 +316,7 @@ initMongoDB().then(() => {
         console.log(`🚀 Server running on http://localhost:${port}`);
     });
 });
+
+module.exports = JWT_SECRET
 
 
