@@ -309,21 +309,6 @@ app.delete("/api/admin/delete/:id", isAdminMiddleware, async (req, res) => {
 
 
 
-// Start Express Server AFTER DB Connection
-initMongoDB().then(() => {
-    // Start the server
-    app.listen(port, () => {
-        console.log(`🚀 Server running on http://localhost:${port}`);
-    });
-});
-
-module.exports = {JWT_SECRET};
-
-
-
-
-
-
 
 
 
@@ -446,3 +431,15 @@ async function convertToWav(inputPath, outputPath) {
             .run();
     });
 }
+
+
+
+
+
+// Start Express Server AFTER DB Connection
+initMongoDB().then(() => {
+    // Start the server
+    app.listen(port, () => {
+        console.log(`🚀 Server running on http://localhost:${port}`);
+    });
+});
