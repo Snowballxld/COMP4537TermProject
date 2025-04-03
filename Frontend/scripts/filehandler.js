@@ -10,7 +10,6 @@ const recordingStatus = document.getElementById('recordingStatus');
 const uploadButton = document.getElementById('uploadButton');
 const audioFileInput = document.getElementById('audioFile');
 const transcriptionOutput = document.getElementById('transcription');
-import { MESSAGES } from '../lang/en/en.js';
 
 
 // Initialize event listeners
