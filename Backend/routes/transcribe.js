@@ -16,12 +16,22 @@ router.post('/api/transcribe', upload.single('audio'), async (req, res) => {
         return res.status(400).json({ error: 'No file uploaded' }); // Return error if no file was uploaded
     }
 
-    const count = await APICount.findOne({ api: "/transcribe/api/transcribe" });
-
     try {
+        const updatedCount = await APICount.findOneAndUpdate(
+            { api: "/transcribe/api/transcribe" },
+            { $inc: { count: 1 } },
+            { upsert: true, new: true, returnDocument: "after" }
+        );
+
+        let warningMessage = null;
+        if (updatedCount.count > 20) {
+            warningMessage = "Warning: You have exceeded 20 API requests.";
+        }
+
         const transcription = await transcribeAudio(req.file.path); // Transcribe the uploaded file
         console.log(transcription)
-        res.json({ text: transcription }); // Send transcription result back
+
+        res.json({ text: transcription, warning: warningMessage });
     } catch (error) {
         console.error('Error during transcription:', error);
         res.status(500).json({ error: 'Error during transcription' }); // Handle errors

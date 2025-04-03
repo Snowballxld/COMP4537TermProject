@@ -209,6 +209,11 @@ async function prepareAndSendAudio(file) {
 
         const result = await response.json();
         console.log("Transcription result:", result);
+
+        if (result.warning) {
+            alert(`Warning: ${result.warning}`);
+        }
+
         transcriptionOutput.textContent = result.text || 'No transcription returned';
         recordingStatus.textContent = 'Transcription complete';
 
