@@ -18,21 +18,21 @@ router.post('/api/transcribe', upload.single('audio'), async (req, res) => {
     }
 
     try {
-        // const token = req.cookies.token;
-        // if (!token) {
-        //     return res.status(401).json({ error: "Unauthorized: No token provided" });
-        // }
+        const token = req.cookies.token;
+        if (!token) {
+            return res.status(401).json({ error: "Unauthorized: No token provided" });
+        }
 
-        // const decoded = jwt.verify(token, JWT_SECRET);
-        // const user = await User.findOne({ email: decoded.email });
+        const decoded = jwt.verify(token, JWT_SECRET);
+        const user = await User.findOne({ email: decoded.email });
 
-        // if (!user) {
-        //     return res.status(404).json({ error: "User not found" });
-        // }
+        if (!user) {
+            return res.status(404).json({ error: "User not found" });
+        }
 
         // Increment user's API usage in the database
-        // user.apiUsage += 1;
-        // await user.save();
+        user.apiUsage += 1;
+        await user.save();
 
         const updatedCount = await APICount.findOneAndUpdate(
             { api: "/transcribe/api/transcribe" },
