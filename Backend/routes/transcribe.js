@@ -9,7 +9,7 @@ const { User, ResetToken, APICount } = require("../models");
 const upload = multer({ dest: 'uploads/' });
 const crypto = require('crypto');
 // const JWT_SECRET = process.env.JWT_SECRET || crypto.randomBytes(64).toString('hex');
-const JWT_SECRET = require("../server")
+const {JWT_SECRET} = require("../server")
 const jwt = require('jsonwebtoken');
 
 // Route to handle audio file upload and transcription

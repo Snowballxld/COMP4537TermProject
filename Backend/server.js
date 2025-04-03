@@ -317,6 +317,6 @@ initMongoDB().then(() => {
     });
 });
 
-module.exports = JWT_SECRET;
+module.exports = {JWT_SECRET};
 
 
