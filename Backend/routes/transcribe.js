@@ -8,7 +8,8 @@ const router = express.Router();
 const { User, ResetToken, APICount } = require("../models");
 const upload = multer({ dest: 'uploads/' });
 const crypto = require('crypto');
-const JWT_SECRET = process.env.JWT_SECRET || crypto.randomBytes(64).toString('hex');
+// const JWT_SECRET = process.env.JWT_SECRET || crypto.randomBytes(64).toString('hex');
+const JWT_SECRET = require("../server")
 
 // Route to handle audio file upload and transcription
 router.post('/api/transcribe', upload.single('audio'), async (req, res) => {
@@ -42,9 +43,9 @@ router.post('/api/transcribe', upload.single('audio'), async (req, res) => {
 
         // let warningMessage = null;
         // console.log(updatedCount.count)
-        if (1 > 20) {
-            warningMessage = "Warning: You have exceeded 20 API requests.";
-        }
+        // if (1 > 20) {
+        //     warningMessage = "Warning: You have exceeded 20 API requests.";
+        // }
 
         const transcription = await transcribeAudio(req.file.path); // Transcribe the uploaded file
         console.log(transcription)
@@ -52,7 +53,7 @@ router.post('/api/transcribe', upload.single('audio'), async (req, res) => {
         res.json({ text: transcription, warning: warningMessage });
     } catch (error) {
         console.error('Error during transcription:', error);
-        res.status(500).json({ "error": error }); // Handle errors
+        res.status(500).json({ error: error.message }); // Handle errors
     }
 
 });
