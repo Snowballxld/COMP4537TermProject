@@ -350,11 +350,11 @@ app.post('/transcribe/api/transcribe', upload.single('audio'), async (req, res) 
         //     { upsert: true, new: true, returnDocument: "after" }
         // );
 
-        // let warningMessage = null;
-        // console.log(updatedCount.count)
-        // if (1 > 20) {
-        //     warningMessage = "Warning: You have exceeded 20 API requests.";
-        // }
+        let warningMessage = null;
+        console.log(updatedCount.count)
+        if (1 > 20) {
+            warningMessage = "Warning: You have exceeded 20 API requests.";
+        }
 
         const transcription = await transcribeAudio(req.file.path); // Transcribe the uploaded file
         console.log(transcription)
