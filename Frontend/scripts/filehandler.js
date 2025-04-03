@@ -10,17 +10,17 @@ const recordingStatus = document.getElementById('recordingStatus');
 const uploadButton = document.getElementById('uploadButton');
 const audioFileInput = document.getElementById('audioFile');
 const transcriptionOutput = document.getElementById('transcription');
+import { MESSAGES } from '../lang/en/en.js';
+
 
 // Initialize event listeners
 recordButton.addEventListener('click', (event) => {
     event.preventDefault();
-    console.log("Record button clicked");
     toggleRecording().catch(error => console.error('Toggle recording error:', error));
 });
 
 uploadButton.addEventListener('click', (event) => {
     event.preventDefault();
-    console.log("Upload button clicked");
     uploadAudio().catch(error => console.error('Upload error:', error));
 });
 
@@ -39,7 +39,7 @@ async function startRecording() {
     console.log("Starting recording...");
     try {
         audioChunks = [];
-        recordingStatus.textContent = 'Initializing microphone...';
+        recordingStatus.textContent = MESSAGES.recordingInitializing;
 
         audioStream = await navigator.mediaDevices.getUserMedia({
             audio: {
@@ -69,7 +69,7 @@ async function startRecording() {
 
         mediaRecorder.onstop = async () => {
             console.log("MediaRecorder stopped");
-            recordingStatus.textContent = 'Finalizing recording...';
+            recordingStatus.textContent = MESSAGES.recordingStopped;
 
             try {
                 console.log("Total chunks size:", audioChunks.reduce((sum, chunk) => sum + chunk.size, 0));
@@ -85,7 +85,7 @@ async function startRecording() {
                 await prepareAndSendAudio(file);
             } catch (error) {
                 console.error('Final processing error:', error);
-                recordingStatus.textContent = 'Error processing recording';
+                recordingStatus.textContent = MESSAGES.recordingError;
             } finally {
                 cleanupRecording();
             }
@@ -96,11 +96,11 @@ async function startRecording() {
         isRecording = true;
         recordButton.textContent = 'Stop Recording';
         recordButton.classList.add('recording');
-        recordingStatus.textContent = 'Recording...';
+        recordingStatus.textContent = MESSAGES.recordingStarted;
 
     } catch (error) {
         console.error('Recording start failed:', error);
-        recordingStatus.textContent = 'Microphone access denied';
+        recordingStatus.textContent = MESSAGES.microphoneAccessDenied;
         cleanupRecording();
     }
 }
@@ -109,7 +109,7 @@ async function startRecording() {
 async function stopRecording() {
     console.log("Stopping recording...");
     if (!isRecording || !mediaRecorder) {
-        console.log("Not currently recording");
+        console.log(MESSAGES.recordingNotStarted);
         return;
     }
 
@@ -133,12 +133,12 @@ async function stopRecording() {
         isRecording = false;
         recordButton.textContent = 'Start Recording';
         recordButton.classList.remove('recording');
-        recordingStatus.textContent = 'Finalizing...';
+        recordingStatus.textContent = MESSAGES.recordingFinalizing;
         console.log("Recording stopped successfully");
 
     } catch (error) {
         console.error('Error stopping recording:', error);
-        recordingStatus.textContent = 'Error stopping recording';
+        recordingStatus.textContent = MESSAGES.stopRecordingError;
         cleanupRecording();
     }
 }
@@ -147,21 +147,21 @@ async function stopRecording() {
 async function uploadAudio() {
     const file = audioFileInput.files[0];
     if (!file) {
-        console.log("No file selected");
-        alert('Please select an audio file first');
+        console.log(MESSAGES.fileNotSelected);
+        alert(MESSAGES.fileNotSelected);
         return;
     }
 
-    console.log("Uploading file:", file.name, "Size:", file.size, "Type:", file.type);
+    console.log(MESSAGES.fileSelected, file.name, "Size:", file.size, "Type:", file.type);
     uploadButton.disabled = true;
-    uploadButton.textContent = 'Processing...';
-    transcriptionOutput.textContent = 'Transcribing audio...';
+    uploadButton.textContent = MESSAGES.uploadProcessing;
+    transcriptionOutput.textContent = MESSAGES.transcribingAudio;
 
     try {
         await prepareAndSendAudio(file);
     } catch (error) {
-        console.error('Upload error:', error);
-        transcriptionOutput.textContent = 'Error: Failed to transcribe audio';
+        console.error(MESSAGES.uploadError, error);
+        transcriptionOutput.textContent = MESSAGES.uploadFailed;
     } finally {
         uploadButton.disabled = false;
         uploadButton.textContent = 'Transcribe File';
@@ -187,7 +187,7 @@ async function prepareAndSendAudio(file) {
     try {
         const controller = new AbortController();
         const timeoutId = setTimeout(() => {
-            console.log("Request timeout triggered");
+            console.log(MESSAGES.timeoutError);
             controller.abort();
         }, 30000); // 30s timeout
 
@@ -203,7 +203,7 @@ async function prepareAndSendAudio(file) {
 
         if (!response.ok) {
             const errorText = await response.text();
-            console.error("Server error response:", errorText);
+            console.error(MESSAGES.warningServerError, errorText);
             throw new Error(`Server error: ${response.status} - ${errorText}`);
         }
 
@@ -211,18 +211,18 @@ async function prepareAndSendAudio(file) {
         console.log("Transcription result:", result);
 
         if (result.warning) {
-            alert(`Warning: ${result.warning}`);
+            alert(MESSAGES.warningNotFound + result.warning);
         }
 
-        transcriptionOutput.textContent = result.text || 'No transcription returned';
-        recordingStatus.textContent = 'Transcription complete';
+        transcriptionOutput.textContent = result.text || MESSAGES.transcriptionResultNotFound;
+        recordingStatus.textContent = MESSAGES.transcriptionComplete;
 
     } catch (error) {
-        console.error('Upload failed:', error);
+        console.error(MESSAGES.uploadFailed, error);
         transcriptionOutput.textContent = error.name === 'AbortError'
-            ? 'Request timed out'
-            : 'Upload failed';
-        recordingStatus.textContent = 'Error occurred';
+            ? MESSAGES.timeoutError
+            : MESSAGES.uploadFailed;
+        recordingStatus.textContent = MESSAGES.genericError;
         throw error;
     }
 }
