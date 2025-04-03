@@ -189,6 +189,7 @@ app.post("/api/login", async (req, res) => {
         );
         // set jwt as an http cookie
         res.cookie("token", token, {
+            httpOnly: true,
             secure: true,
             maxAge: 60 * 60 * 1000,
             sameSite: "None"
