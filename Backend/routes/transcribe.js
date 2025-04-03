@@ -17,6 +17,18 @@ router.post('/api/transcribe', upload.single('audio'), async (req, res) => {
     }
 
     try {
+
+        const userId = req.user.id; // Ensure `req.user` is populated
+        const user = await User.findById(userId);
+
+        if (!user) {
+            return res.status(404).json({ error: 'User not found' });
+        }
+
+        // Increment user's API usage
+        user.apiUsage += 1;
+        await user.save();
+
         const updatedCount = await APICount.findOneAndUpdate(
             { api: "/transcribe/api/transcribe" },
             { $inc: { count: 1 } },
@@ -24,7 +36,8 @@ router.post('/api/transcribe', upload.single('audio'), async (req, res) => {
         );
 
         let warningMessage = null;
-        if (updatedCount.count > 20) {
+        console.log(updatedCount.count)
+        if (user.apiUsage > 20) {
             warningMessage = "Warning: You have exceeded 20 API requests.";
         }
 
