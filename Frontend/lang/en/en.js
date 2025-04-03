@@ -31,11 +31,11 @@ export const MESSAGES = {
     recordingNotStarted: "Not currently recording",
 
     // Error related messages
-    stopRecordingError: "Error stopping recording",
-    uploadError: "Upload error:",
-    uploadFailed: "Upload failed",
-    timeoutError: "Request timed out",
-    genericError: "Error occurred",
+    stopRecordingError: "400 Error stopping recording",
+    uploadError: "400 Upload error:",
+    uploadFailed: "400 Upload failed",
+    timeoutError: "400 Request timed out",
+    genericError: "400 Error occurred",
 
     // Transcription related messages
     transcribingAudio: "Transcribing audio...",
