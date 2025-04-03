@@ -41,7 +41,7 @@ router.post("/", async (req, res) => {
         const existingToken = await ResetToken.findOne({ email });
         if (existingToken) {
             if(existingToken.expiry < Date.now()){ //expired
-                exisitingToken.deleteOne()
+                existingToken.deleteOne()
             } else{
                 return res.status(401).json({ message: "Token already exists" });
             }
