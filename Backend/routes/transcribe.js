@@ -2,14 +2,13 @@ const express = require('express');
 const ffmpeg = require('fluent-ffmpeg');
 const fs = require('fs');
 const wavDecoder = require('wav-decoder');
-const os = require('os');
 const path = require('path');
 const multer = require('multer');
 const router = express.Router();
 const { User, ResetToken, APICount } = require("../models");
 const upload = multer({ dest: 'uploads/' });
+const crypto = require('crypto');
 const JWT_SECRET = process.env.JWT_SECRET || crypto.randomBytes(64).toString('hex');
-const site = "https://web-translator-j7nv7.ondigitalocean.app";
 
 // Route to handle audio file upload and transcription
 router.post('/api/transcribe', upload.single('audio'), async (req, res) => {
