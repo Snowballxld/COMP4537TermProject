@@ -25,7 +25,7 @@ router.post('/api/transcribe', upload.single('audio'), async (req, res) => {
 
         const decoded = jwt.verify(token, JWT_SECRET);
         const user = await User.findOne({ email: decoded.email });
-
+        console.log("user: ", user)
         if (!user) {
             return res.status(404).json({ error: "User not found" });
         }
