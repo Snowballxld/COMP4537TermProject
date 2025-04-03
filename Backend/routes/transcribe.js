@@ -39,7 +39,7 @@ async function loadModel() {
 
         console.log('Loading Whisper-tiny from Hugging Face...');
 
-        transcriber = await pipeline('automatic-speech-recognition', 'Xenova/whisper-tiny', {
+        transcriber = await pipeline('automatic-speech-recognition', 'Xenova/whisper-small', {
             quantized: true,
             device: 'cpu',
         });
