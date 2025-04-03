@@ -14,26 +14,29 @@ const JWT_SECRET = process.env.JWT_SECRET || crypto.randomBytes(64).toString('he
 router.post('/api/transcribe', upload.single('audio'), async (req, res) => {
 
     if (!req.file) {
-        return res.status(400).json({ error: 'No file uploaded' }); // Return error if no file was uploaded
+        return res.status(400).json({ error: 'No file uploaded' });
     }
 
     try {
-        const token = req.cookies.token;
+        // Extract token from the Authorization header
+        const token = req.headers.authorization?.split(' ')[1]; // Get token from "Bearer <token>"
+
         if (!token) {
             return res.status(401).json({ error: "Unauthorized: No token provided" });
         }
 
-        const decoded = jwt.verify(token, JWT_SECRET);
-        const user = await User.findOne({ email: decoded.email });
-        console.log("user: ", user)
+        // No JWT verification needed here if it's already managed elsewhere
+        const user = await User.findOne({ email: req.userEmail });  // Assuming userEmail is set by server.js
+
         if (!user) {
             return res.status(404).json({ error: "User not found" });
         }
 
-        // Increment user's API usage in the database
+        // Increment the API usage count for the user
         user.apiUsage += 1;
         await user.save();
 
+        // Increment the API call count for this specific endpoint
         const updatedCount = await APICount.findOneAndUpdate(
             { api: "/transcribe/api/transcribe" },
             { $inc: { count: 1 } },
@@ -41,20 +44,18 @@ router.post('/api/transcribe', upload.single('audio'), async (req, res) => {
         );
 
         let warningMessage = null;
-        console.log(updatedCount.count)
-        if (1 > 20) {
+        if (updatedCount.count > 20) {
             warningMessage = "Warning: You have exceeded 20 API requests.";
         }
 
-        const transcription = await transcribeAudio(req.file.path); // Transcribe the uploaded file
-        console.log(transcription)
+        const transcription = await transcribeAudio(req.file.path);  // Transcribe the audio file
+        console.log(transcription);
 
-        res.json({ text: transcription, warning: warningMessage });
+        res.json({ text: transcription, warning: warningMessage });  // Return transcription result
     } catch (error) {
         console.error('Error during transcription:', error);
-        res.status(500).json({ "error": error }); // Handle errors
+        res.status(500).json({ error: 'Error during transcription' });
     }
-
 });
 
 // Load model once and reuse it
