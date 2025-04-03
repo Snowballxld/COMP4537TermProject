@@ -1,5 +1,5 @@
 // Recording variables
-const site = "https://comp4537termproject-1.onrender.com";
+const site = "https://web-translator-bs5vf.ondigitalocean.app";
 // const site = ""
 let mediaRecorder;
 let audioStream;

@@ -81,25 +81,25 @@
     </div>
 
     <script>
-        const site = "https://comp4537termproject-1.onrender.com";
+        // const site = "https://comp4537termproject-1.onrender.com";
 
-        // ✅ Check authentication when page loads
-        window.onload = async () => {
-            try {
-                const response = await fetch(`${site}/api/user`, {
-                    method: "GET",
-                    credentials: "include"
-                });
+        // // ✅ Check authentication when page loads
+        // window.onload = async () => {
+        //     try {
+        //         const response = await fetch(`${site}/api/user`, {
+        //             method: "GET",
+        //             credentials: "include"
+        //         });
 
-                if (!response.ok) {
-                    console.warn("Not authenticated, redirecting to login...");
-                    window.location.href = "/views/login.html";
-                }
-            } catch (error) {
-                console.error("Error checking authentication:", error);
-                window.location.href = "/views/login.html";
-            }
-        };
+        //         if (!response.ok) {
+        //             console.warn("Not authenticated, redirecting to login...");
+        //             window.location.href = "/views/login.html";
+        //         }
+        //     } catch (error) {
+        //         console.error("Error checking authentication:", error);
+        //         window.location.href = "/views/login.html";
+        //     }
+        // };
     </script>
 
     <script src="../scripts/filehandler.js"></script>
