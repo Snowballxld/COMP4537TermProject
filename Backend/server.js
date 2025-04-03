@@ -22,7 +22,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 // I moved this up
 app.use(cors({
-    origin: "euphonious-creponne-2b667e.netlify.app",
+    origin: "https://euphonious-creponne-2b667e.netlify.app",
     credentials: true, // Ensure cookies are sent
     methods: "GET,POST,PUT,DELETE,OPTIONS",
     allowedHeaders: ["Content-Type", "Authorization", "Accept"]
@@ -30,7 +30,7 @@ app.use(cors({
 
 
 // I just added this
-app.options("euphonious-creponne-2b667e.netlify.app", cors()); // Allows preflight requests for all routes
+app.options("https://euphonious-creponne-2b667e.netlify.app", cors()); // Allows preflight requests for all routes
 
 const port = process.env.PORT || 3000;
 const mongoUri = process.env.MONGO_URI;
