@@ -8,6 +8,8 @@ const multer = require('multer');
 const router = express.Router();
 const { User, ResetToken, APICount } = require("../models");
 const upload = multer({ dest: 'uploads/' });
+const JWT_SECRET = process.env.JWT_SECRET || crypto.randomBytes(64).toString('hex');
+const site = "https://web-translator-j7nv7.ondigitalocean.app";
 
 // Route to handle audio file upload and transcription
 router.post('/api/transcribe', upload.single('audio'), async (req, res) => {
@@ -17,15 +19,19 @@ router.post('/api/transcribe', upload.single('audio'), async (req, res) => {
     }
 
     try {
-
-        const userId = req.user.id; // Ensure `req.user` is populated
-        const user = await User.findById(userId);
-
-        if (!user) {
-            return res.status(404).json({ error: 'User not found' });
+        const token = req.cookies.token;
+        if (!token) {
+            return res.status(401).json({ error: "Unauthorized: No token provided" });
         }
 
-        // Increment user's API usage
+        const decoded = jwt.verify(token, JWT_SECRET);
+        const user = await User.findOne({ email: decoded.email });
+
+        if (!user) {
+            return res.status(404).json({ error: "User not found" });
+        }
+
+        // Increment user's API usage in the database
         user.apiUsage += 1;
         await user.save();
 
