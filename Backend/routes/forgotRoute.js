@@ -78,7 +78,7 @@ router.post("/", async (req, res) => {
         });
 
         // generate url
-        const resetPasswordBaseUrl = 'https://4537projectfrontend.netlify.app/views/resetPassword.html';
+        const resetPasswordBaseUrl = 'https://euphonious-creponne-2b667e.netlify.app/views/resetPassword.html';
         const resetPasswordLink = `${resetPasswordBaseUrl}?email=${encodeURIComponent(email)}&token=${encodeURIComponent(resetToken)}`;
 
         // Define email options
