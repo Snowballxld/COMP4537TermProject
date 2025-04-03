@@ -67,7 +67,7 @@ async function resetPassword(event) {
                 "Content-Type": "application/json",
             },
             body: JSON.stringify(requestData),
-            // credentials: "include"
+            credentials: "include"
         });
 
         if (response.ok) {

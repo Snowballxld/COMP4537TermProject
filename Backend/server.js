@@ -191,7 +191,7 @@ app.post("/api/login", async (req, res) => {
         res.cookie("token", token, {
             secure: true,
             maxAge: 60 * 60 * 1000,
-            sameSite: "None"why
+            sameSite: "None"
         });
 
         const count = await APICount.findOne({ api: "/api/login" });
