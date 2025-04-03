@@ -1,6 +1,6 @@
 // Recording variables
-// const site = "https://web-translator-j7nv7.ondigitalocean.app";
-const site = "";
+const site = "https://web-translator-j7nv7.ondigitalocean.app";
+// const site = "";
 let mediaRecorder;
 let audioStream;
 let audioChunks = [];
